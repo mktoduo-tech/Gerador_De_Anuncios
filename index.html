@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdBlast AI - Gerador de Anúncios</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Animação do spinner */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Animação de fade-in para os cards */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        /* Delay para animação escalonada dos cards */
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+
+        /* Toast notification */
+        .toast {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="dark bg-gray-900 min-h-screen">
+    <!-- Header -->
+    <header class="border-b border-gray-800">
+        <div class="max-w-6xl mx-auto px-4 py-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-white">AdBlast AI</h1>
+                    <p class="text-sm text-gray-400">Gerador de Anúncios de Alta Conversão</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Formulário -->
+        <section class="bg-gray-800 rounded-2xl p-6 mb-8 border border-gray-700">
+            <h2 class="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+                <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                Informações do Anúncio
+            </h2>
+
+            <form id="adForm" class="space-y-6">
+                <!-- Grid de inputs -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Oferta Principal -->
+                    <div>
+                        <label for="oferta" class="block text-sm font-medium text-gray-300 mb-2">
+                            Oferta Principal *
+                        </label>
+                        <input
+                            type="text"
+                            id="oferta"
+                            name="oferta"
+                            placeholder="Ex: Curso de Marketing Digital"
+                            class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                            required
+                        >
+                    </div>
+
+                    <!-- Nome do Cliente -->
+                    <div>
+                        <label for="cliente" class="block text-sm font-medium text-gray-300 mb-2">
+                            Nome do Cliente *
+                        </label>
+                        <input
+                            type="text"
+                            id="cliente"
+                            name="cliente"
+                            placeholder="Ex: Empresa XYZ"
+                            class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                            required
+                        >
+                    </div>
+
+                    <!-- Função/Nicho -->
+                    <div>
+                        <label for="nicho" class="block text-sm font-medium text-gray-300 mb-2">
+                            Função/Nicho *
+                        </label>
+                        <input
+                            type="text"
+                            id="nicho"
+                            name="nicho"
+                            placeholder="Ex: Empreendedores digitais"
+                            class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Botão de Gerar -->
+                <div class="flex justify-center pt-4">
+                    <button
+                        type="submit"
+                        id="generateBtn"
+                        class="px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-500 hover:to-primary-600 text-white font-semibold rounded-xl transition-all duration-200 flex items-center gap-3 shadow-lg shadow-primary-900/30 hover:shadow-primary-900/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span id="btnText">Gerar Variações</span>
+                        <svg id="btnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <!-- Spinner (hidden by default) -->
+                        <svg id="btnSpinner" class="w-5 h-5 spinner hidden" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Área de Resultados -->
+        <section id="resultsSection" class="hidden">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Variações Geradas
+                </h2>
+                <span id="resultsCount" class="text-sm text-gray-400"></span>
+            </div>
+
+            <!-- Grid de Cards -->
+            <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards serão inseridos aqui via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Estado de Erro -->
+        <section id="errorSection" class="hidden">
+            <div class="bg-red-900/20 border border-red-800 rounded-xl p-6 text-center">
+                <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <h3 class="text-lg font-semibold text-red-400 mb-2">Erro ao gerar anúncios</h3>
+                <p id="errorMessage" class="text-gray-400"></p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 mt-12">
+        <div class="max-w-6xl mx-auto px-4 py-6">
+            <p class="text-center text-sm text-gray-500">
+                Powered by OpenAI GPT-4o | Growth Team Tool
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // =============================================
+        // CONFIGURAÇÃO
+        // =============================================
+        const API_URL = 'http://localhost:5000';
+        const REQUEST_TIMEOUT = 60000; // 60 segundos
+
+        // Tipos de variação (sincronizado com o prompt do backend)
+        const VARIATION_TYPES = [
+            { label: 'Dor/Problema', color: 'bg-red-900/50 text-red-400' },
+            { label: 'Benefício', color: 'bg-green-900/50 text-green-400' },
+            { label: 'Prova Social', color: 'bg-blue-900/50 text-blue-400' },
+            { label: 'Urgência', color: 'bg-yellow-900/50 text-yellow-400' },
+            { label: 'Curiosidade', color: 'bg-purple-900/50 text-purple-400' }
+        ];
+
+        // =============================================
+        // ELEMENTOS DO DOM
+        // =============================================
+        const form = document.getElementById('adForm');
+        const generateBtn = document.getElementById('generateBtn');
+        const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const resultsSection = document.getElementById('resultsSection');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const resultsCount = document.getElementById('resultsCount');
+        const errorSection = document.getElementById('errorSection');
+        const errorMessage = document.getElementById('errorMessage');
+        const toastContainer = document.getElementById('toastContainer');
+
+        // =============================================
+        // FUNÇÕES UTILITÁRIAS
+        // =============================================
+
+        /**
+         * Mostra um toast notification
+         */
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+            const icon = type === 'success'
+                ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>'
+                : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
+
+            toast.className = `toast ${bgColor} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2`;
+            toast.innerHTML = `
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">${icon}</svg>
+                <span>${message}</span>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        /**
+         * Copia texto para a área de transferência
+         */
+        async function copyToClipboard(text, button) {
+            try {
+                await navigator.clipboard.writeText(text);
+
+                // Feedback visual
+                const originalHTML = button.innerHTML;
+                button.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                `;
+                button.classList.remove('text-gray-400', 'hover:text-white');
+                button.classList.add('text-green-500');
+
+                showToast('Copiado para a área de transferência!');
+
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('text-green-500');
+                    button.classList.add('text-gray-400', 'hover:text-white');
+                }, 2000);
+            } catch (err) {
+                showToast('Erro ao copiar', 'error');
+            }
+        }
+
+        /**
+         * Define o estado de loading do botão
+         */
+        function setLoading(isLoading) {
+            generateBtn.disabled = isLoading;
+            btnText.textContent = isLoading ? 'Gerando...' : 'Gerar Variações';
+            btnIcon.classList.toggle('hidden', isLoading);
+            btnSpinner.classList.toggle('hidden', !isLoading);
+        }
+
+        /**
+         * Valida os campos e mostra feedback visual
+         */
+        function validateFields() {
+            const fields = ['oferta', 'cliente', 'nicho'];
+            let isValid = true;
+
+            fields.forEach(fieldId => {
+                const input = document.getElementById(fieldId);
+                const value = input.value.trim();
+
+                if (!value) {
+                    input.classList.add('border-red-500', 'ring-2', 'ring-red-500/50');
+                    input.classList.remove('border-gray-600');
+                    isValid = false;
+                } else {
+                    input.classList.remove('border-red-500', 'ring-2', 'ring-red-500/50');
+                    input.classList.add('border-gray-600');
+                }
+            });
+
+            return isValid;
+        }
+
+        /**
+         * Remove validação visual ao digitar
+         */
+        function clearValidationOnInput() {
+            ['oferta', 'cliente', 'nicho'].forEach(fieldId => {
+                const input = document.getElementById(fieldId);
+                input.addEventListener('input', () => {
+                    if (input.value.trim()) {
+                        input.classList.remove('border-red-500', 'ring-2', 'ring-red-500/50');
+                        input.classList.add('border-gray-600');
+                    }
+                });
+            });
+        }
+
+        /**
+         * Cria um card de anúncio
+         */
+        function createAdCard(ad, index) {
+            const delayClass = `delay-${index + 1}`;
+            const fullText = `${ad.titulo}\n\n${ad.descricao}\n\nCTA: ${ad.cta}`;
+            const variationType = VARIATION_TYPES[index] || VARIATION_TYPES[0];
+
+            return `
+                <div class="bg-gray-800 rounded-xl border border-gray-700 p-6 hover:border-primary-500/50 transition-all duration-200 fade-in opacity-0 ${delayClass}">
+                    <!-- Header do Card -->
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex flex-col gap-1">
+                            <span class="px-2 py-1 ${variationType.color} text-xs font-medium rounded inline-block w-fit">
+                                ${variationType.label}
+                            </span>
+                        </div>
+                        <button
+                            onclick="copyToClipboard(\`${fullText.replace(/`/g, '\\`')}\`, this)"
+                            class="text-gray-400 hover:text-white transition-colors p-1"
+                            title="Copiar anúncio completo"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Título -->
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs text-gray-500 uppercase tracking-wider">Título</label>
+                            <span class="text-xs text-gray-600">${ad.titulo.length}/40</span>
+                        </div>
+                        <p class="text-white font-semibold mt-1">${ad.titulo}</p>
+                    </div>
+
+                    <!-- Descrição -->
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs text-gray-500 uppercase tracking-wider">Descrição</label>
+                            <span class="text-xs text-gray-600">${ad.descricao.length}/125</span>
+                        </div>
+                        <p class="text-gray-300 mt-1 text-sm leading-relaxed">${ad.descricao}</p>
+                    </div>
+
+                    <!-- CTA -->
+                    <div>
+                        <label class="text-xs text-gray-500 uppercase tracking-wider">CTA</label>
+                        <div class="mt-2">
+                            <span class="inline-block px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg">
+                                ${ad.cta}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * Renderiza os resultados
+         */
+        function renderResults(ads) {
+            resultsGrid.innerHTML = ads.map((ad, index) => createAdCard(ad, index)).join('');
+            resultsCount.textContent = `${ads.length} variações`;
+            resultsSection.classList.remove('hidden');
+            errorSection.classList.add('hidden');
+        }
+
+        /**
+         * Mostra erro
+         */
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorSection.classList.remove('hidden');
+            resultsSection.classList.add('hidden');
+        }
+
+        // =============================================
+        // EVENT LISTENERS
+        // =============================================
+
+        // Inicializa limpeza de validação ao digitar
+        clearValidationOnInput();
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validação visual dos campos
+            if (!validateFields()) {
+                showToast('Preencha todos os campos obrigatórios', 'error');
+                return;
+            }
+
+            // Coleta os dados do formulário
+            const formData = {
+                oferta: document.getElementById('oferta').value.trim(),
+                cliente: document.getElementById('cliente').value.trim(),
+                nicho: document.getElementById('nicho').value.trim()
+            };
+
+            setLoading(true);
+            errorSection.classList.add('hidden');
+
+            // Controller para timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+
+            try {
+                const response = await fetch(`${API_URL}/generate_ads`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                const result = await response.json();
+
+                if (result.success) {
+                    renderResults(result.data);
+                    showToast('Anúncios gerados com sucesso!');
+                } else {
+                    showError(result.error || 'Erro desconhecido ao gerar anúncios');
+                }
+            } catch (error) {
+                clearTimeout(timeoutId);
+                console.error('Erro:', error);
+
+                if (error.name === 'AbortError') {
+                    showError('A requisição demorou muito. Tente novamente.');
+                } else {
+                    showError('Não foi possível conectar ao servidor. Verifique se o backend está rodando.');
+                }
+            } finally {
+                setLoading(false);
+            }
+        });
+    </script>
+</body>
+</html>
