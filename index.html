@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrowthBlast AI - Suite de Ferramentas</title>
+    <title>Gerador de Anuncios - ODUO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -37,18 +37,20 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .fade-in {
-            animation: fadeIn 0.4s ease-out forwards;
+            animation: fadeIn 0.3s ease-out forwards;
         }
 
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
-        .delay-5 { animation-delay: 0.5s; }
+        @keyframes pulse-border {
+            0%, 100% { border-color: rgba(14, 165, 233, 0.3); }
+            50% { border-color: rgba(14, 165, 233, 0.8); }
+        }
+        .pulse-border {
+            animation: pulse-border 2s ease-in-out infinite;
+        }
 
         .toast {
             animation: slideIn 0.3s ease-out;
@@ -70,283 +72,306 @@
             border-radius: 3px;
         }
 
-        .tab-content {
-            display: none;
+        .keyword-item:hover {
+            background: rgba(14, 165, 233, 0.1);
         }
-        .tab-content.active {
-            display: block;
+
+        .ad-card {
+            transition: all 0.2s ease;
+        }
+        .ad-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
         }
     </style>
 </head>
 <body class="dark bg-gray-900 min-h-screen">
     <!-- Header -->
-    <header class="border-b border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 py-6">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-lg flex items-center justify-center">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
+    <header class="border-b border-gray-800 bg-gray-900/95 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">Gerador de Anuncios</h1>
+                        <p class="text-xs text-gray-400">ODUO - Ferramenta Interna</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="text-2xl font-bold text-white">GrowthBlast AI</h1>
-                    <p class="text-sm text-gray-400">Suite de Ferramentas para Growth Team</p>
+                <div class="flex items-center gap-4">
+                    <div id="statusIndicator" class="flex items-center gap-2 px-3 py-1 bg-gray-800 rounded-full">
+                        <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span class="text-xs text-gray-400">Online</span>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Tabs Navigation -->
-    <div class="max-w-7xl mx-auto px-4 pt-6">
-        <div class="flex gap-2 border-b border-gray-700">
-            <button
-                onclick="switchTab('keyblast')"
-                id="tab-keyblast"
-                class="tab-btn px-6 py-3 text-sm font-medium rounded-t-lg transition-all flex items-center gap-2 bg-gray-800 text-primary-400 border-b-2 border-primary-500"
-            >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                </svg>
-                KeyBlast
-                <span class="text-xs text-gray-500">Palavras-Chave</span>
-            </button>
-            <button
-                onclick="switchTab('adblast')"
-                id="tab-adblast"
-                class="tab-btn px-6 py-3 text-sm font-medium rounded-t-lg transition-all flex items-center gap-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50"
-            >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-                AdBlast
-                <span class="text-xs text-gray-500">Anúncios + Imagens</span>
-            </button>
-        </div>
-    </div>
-
-    <main class="max-w-7xl mx-auto px-4 py-8">
-
-        <!-- ============================================= -->
-        <!-- TAB: KEYBLAST - Gerador de Palavras-Chave -->
-        <!-- ============================================= -->
-        <div id="content-keyblast" class="tab-content active">
-            <!-- Formulário KeyBlast -->
-            <section class="bg-gray-800 rounded-2xl p-6 mb-8 border border-gray-700">
-                <h2 class="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+    <main class="max-w-7xl mx-auto px-4 py-6">
+        <!-- Formulário Principal -->
+        <section class="bg-gray-800 rounded-2xl p-6 mb-6 border border-gray-700">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-8 h-8 bg-primary-600/20 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    Pesquisa de Palavras-Chave
-                </h2>
+                </div>
+                <div>
+                    <h2 class="text-lg font-semibold text-white">Data Hunter + Ad-Intelligence</h2>
+                    <p class="text-sm text-gray-400">Scraper de palavras-chave reais + Modelagem de anúncios vencedores</p>
+                </div>
+            </div>
 
-                <form id="keywordForm" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div>
-                            <label for="kw_nicho" class="block text-sm font-medium text-gray-300 mb-2">Nicho/Ramo *</label>
-                            <input type="text" id="kw_nicho" placeholder="Ex: Marketing Digital" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500" required>
+            <form id="mainForm" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div>
+                        <label for="ramo" class="block text-sm font-medium text-gray-300 mb-2">
+                            Ramo/Segmento *
+                            <span class="text-xs text-gray-500 font-normal">(para scraping)</span>
+                        </label>
+                        <input type="text" id="ramo" placeholder="Ex: locação de equipamentos"
+                            class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                    </div>
+                    <div>
+                        <label for="localizacao" class="block text-sm font-medium text-gray-300 mb-2">
+                            Localização *
+                            <span class="text-xs text-gray-500 font-normal">(Cidade/Estado)</span>
+                        </label>
+                        <input type="text" id="localizacao" placeholder="Ex: Curitiba PR"
+                            class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                    </div>
+                    <div>
+                        <label for="oferta" class="block text-sm font-medium text-gray-300 mb-2">Oferta Principal *</label>
+                        <input type="text" id="oferta" placeholder="Ex: Locação de Geradores"
+                            class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                    </div>
+                    <div>
+                        <label for="cliente" class="block text-sm font-medium text-gray-300 mb-2">Nome do Cliente *</label>
+                        <input type="text" id="cliente" placeholder="Ex: PowerTech Geradores"
+                            class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                    </div>
+                    <div>
+                        <label for="nicho" class="block text-sm font-medium text-gray-300 mb-2">Nicho/Público *</label>
+                        <input type="text" id="nicho" placeholder="Ex: Construtoras e eventos"
+                            class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" required>
+                    </div>
+                </div>
+
+                <div class="flex justify-center pt-2">
+                    <button type="submit" id="generateBtn"
+                        class="px-8 py-4 bg-gradient-to-r from-primary-600 to-emerald-600 hover:from-primary-500 hover:to-emerald-500 text-white font-semibold rounded-xl transition-all duration-200 flex items-center gap-3 shadow-lg shadow-primary-900/30 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <span id="btnText">Iniciar Pipeline Completo</span>
+                        <svg id="btnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <svg id="btnSpinner" class="w-5 h-5 spinner hidden" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Status do Pipeline -->
+        <section id="pipelineStatus" class="hidden mb-6">
+            <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700">
+                <div class="flex items-center gap-4">
+                    <div id="step1Status" class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+                            <span class="text-sm font-medium text-gray-400">1</span>
                         </div>
-                        <div>
-                            <label for="kw_produto" class="block text-sm font-medium text-gray-300 mb-2">Produto/Oferta *</label>
-                            <input type="text" id="kw_produto" placeholder="Ex: Curso de Tráfego Pago" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500" required>
+                        <span class="text-sm text-gray-400">Data Hunter</span>
+                    </div>
+                    <div class="flex-1 h-0.5 bg-gray-700"></div>
+                    <div id="step2Status" class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+                            <span class="text-sm font-medium text-gray-400">2</span>
                         </div>
-                        <div>
-                            <label for="kw_localizacao" class="block text-sm font-medium text-gray-300 mb-2">Localização *</label>
-                            <select id="kw_localizacao" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-                                <option value="Brasil">Brasil</option>
-                                <option value="Portugal">Portugal</option>
-                                <option value="Estados Unidos">Estados Unidos</option>
-                                <option value="América Latina">América Latina</option>
-                            </select>
+                        <span class="text-sm text-gray-400">Ad-Intelligence</span>
+                    </div>
+                    <div class="flex-1 h-0.5 bg-gray-700"></div>
+                    <div id="step3Status" class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+                            <span class="text-sm font-medium text-gray-400">3</span>
+                        </div>
+                        <span class="text-sm text-gray-400">Pronto!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Banner de Fallback (quando usa IA) -->
+        <section id="fallbackBanner" class="hidden mb-6">
+            <div class="bg-amber-900/30 border border-amber-700/50 rounded-xl p-4 flex items-center gap-4">
+                <div class="w-10 h-10 bg-amber-600/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <p id="fallbackTitle" class="text-amber-300 font-medium text-sm">Busca expandida</p>
+                    <p id="fallbackMessage" class="text-amber-200/70 text-xs mt-0.5"></p>
+                </div>
+                <span id="fallbackBadge" class="px-3 py-1 bg-amber-600/30 text-amber-300 text-xs font-medium rounded-full"></span>
+            </div>
+        </section>
+
+        <!-- Resultados Split View -->
+        <section id="resultsSection" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Coluna Esquerda: Palavras-Chave Reais -->
+                <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden">
+                    <div class="p-4 border-b border-gray-700 bg-gray-800/80">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-emerald-600/20 rounded-lg flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-white">Palavras-Chave Reais</h3>
+                                    <p id="keywordCount" class="text-xs text-gray-400">0 termos encontrados</p>
+                                </div>
+                            </div>
+                            <button onclick="copyAllKeywords()"
+                                class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                Copiar Tudo
+                            </button>
                         </div>
                     </div>
+                    <div id="keywordsList" class="max-h-[600px] overflow-y-auto custom-scrollbar p-2">
+                        <!-- Keywords serão inseridas aqui -->
+                    </div>
+                </div>
 
-                    <div class="flex justify-center pt-4">
-                        <button type="submit" id="kwGenerateBtn" class="px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-500 hover:to-primary-600 text-white font-semibold rounded-xl transition-all duration-200 flex items-center gap-3 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                            <span id="kwBtnText">Gerar Palavras-Chave</span>
-                            <svg id="kwBtnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                <!-- Coluna Direita: Anúncios Vencedores -->
+                <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden">
+                    <div class="p-4 border-b border-gray-700 bg-gray-800/80">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-purple-600/20 rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-white">Anúncios Vencedores</h3>
+                                <p class="text-xs text-gray-400">Modelados dos top performers</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="adsList" class="max-h-[600px] overflow-y-auto custom-scrollbar p-4 space-y-4">
+                        <!-- Ads serão inseridos aqui -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Erro -->
+        <section id="errorSection" class="hidden">
+            <div class="bg-red-900/20 border border-red-800 rounded-xl p-6 text-center">
+                <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <h3 class="text-lg font-semibold text-red-400 mb-2">Erro no Pipeline</h3>
+                <p id="errorMessage" class="text-gray-400"></p>
+                <button onclick="resetUI()" class="mt-4 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition-colors">
+                    Tentar Novamente
+                </button>
+            </div>
+        </section>
+
+        <!-- Seção de Ativos Massivos para Google Ads Responsivo -->
+        <section id="assetsSection" class="hidden mt-8">
+            <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden">
+                <!-- Header da Seção -->
+                <div class="p-4 border-b border-gray-700 bg-gradient-to-r from-orange-900/30 to-amber-900/30">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-orange-600/20 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold text-white">Ativos para Anúncio Responsivo</h3>
+                                <p class="text-xs text-gray-400">15 Títulos + 4 Descrições prontos para Google Ads</p>
+                            </div>
+                        </div>
+                        <button id="generateAssetsBtn" onclick="generateAssets()"
+                            class="px-5 py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white text-sm font-medium rounded-lg transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span id="assetsBtnText">Gerar Ativos</span>
+                            <svg id="assetsBtnIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                             </svg>
-                            <svg id="kwBtnSpinner" class="w-5 h-5 spinner hidden" fill="none" viewBox="0 0 24 24">
+                            <svg id="assetsBtnSpinner" class="w-4 h-4 spinner hidden" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
                         </button>
                     </div>
-                </form>
-            </section>
+                </div>
 
-            <!-- Resultados KeyBlast -->
-            <section id="kwResultsSection" class="hidden space-y-6">
-                <!-- Fundo de Funil -->
-                <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden fade-in">
-                    <div class="p-4 border-b border-gray-700 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                            <h3 class="text-lg font-semibold text-white">Fundo de Funil</h3>
-                            <span class="text-sm text-gray-400">(Intenção de Compra)</span>
+                <!-- Conteúdo dos Ativos -->
+                <div id="assetsContent" class="hidden">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-700">
+                        <!-- Coluna de Títulos -->
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-medium text-orange-400">Títulos</span>
+                                    <span class="text-xs text-gray-500 bg-gray-700 px-2 py-0.5 rounded">máx. 30 caracteres</span>
+                                </div>
+                                <button onclick="copyAllTitles()" class="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                    Copiar Todos
+                                </button>
+                            </div>
+                            <div id="titlesList" class="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar">
+                                <!-- Títulos serão inseridos aqui -->
+                            </div>
                         </div>
-                        <button onclick="copyFunnelKeywords('fundo')" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                            Copiar Lista
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full">
-                            <thead class="bg-gray-900/50">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Palavra-Chave</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Concorrência</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Correspondência</th>
-                                </tr>
-                            </thead>
-                            <tbody id="fundoFunilTable" class="divide-y divide-gray-700"></tbody>
-                        </table>
-                    </div>
-                </div>
 
-                <!-- Meio de Funil -->
-                <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden fade-in">
-                    <div class="p-4 border-b border-gray-700 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                            <h3 class="text-lg font-semibold text-white">Meio de Funil</h3>
-                            <span class="text-sm text-gray-400">(Comparação/Pesquisa)</span>
+                        <!-- Coluna de Descrições -->
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-medium text-amber-400">Descrições</span>
+                                    <span class="text-xs text-gray-500 bg-gray-700 px-2 py-0.5 rounded">máx. 90 caracteres</span>
+                                </div>
+                                <button onclick="copyAllDescriptions()" class="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                    Copiar Todas
+                                </button>
+                            </div>
+                            <div id="descriptionsList" class="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar">
+                                <!-- Descrições serão inseridas aqui -->
+                            </div>
                         </div>
-                        <button onclick="copyFunnelKeywords('meio')" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                            Copiar Lista
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full">
-                            <thead class="bg-gray-900/50">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Palavra-Chave</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Concorrência</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Correspondência</th>
-                                </tr>
-                            </thead>
-                            <tbody id="meioFunilTable" class="divide-y divide-gray-700"></tbody>
-                        </table>
                     </div>
                 </div>
 
-                <!-- Topo de Funil -->
-                <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden fade-in">
-                    <div class="p-4 border-b border-gray-700 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-3 h-3 rounded-full bg-blue-500"></div>
-                            <h3 class="text-lg font-semibold text-white">Topo de Funil</h3>
-                            <span class="text-sm text-gray-400">(Curiosidade/Problema)</span>
-                        </div>
-                        <button onclick="copyFunnelKeywords('topo')" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                            Copiar Lista
-                        </button>
-                    </div>
-                    <div class="overflow-x-auto custom-scrollbar">
-                        <table class="w-full">
-                            <thead class="bg-gray-900/50">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Palavra-Chave</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Concorrência</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Correspondência</th>
-                                </tr>
-                            </thead>
-                            <tbody id="topoFunilTable" class="divide-y divide-gray-700"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Erro KeyBlast -->
-            <section id="kwErrorSection" class="hidden">
-                <div class="bg-red-900/20 border border-red-800 rounded-xl p-6 text-center">
-                    <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <h3 class="text-lg font-semibold text-red-400 mb-2">Erro ao gerar palavras-chave</h3>
-                    <p id="kwErrorMessage" class="text-gray-400"></p>
-                </div>
-            </section>
-        </div>
-
-        <!-- ============================================= -->
-        <!-- TAB: ADBLAST - Gerador de Anúncios -->
-        <!-- ============================================= -->
-        <div id="content-adblast" class="tab-content">
-            <!-- Formulário AdBlast -->
-            <section class="bg-gray-800 rounded-2xl p-6 mb-8 border border-gray-700">
-                <h2 class="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                <!-- Placeholder antes de gerar -->
+                <div id="assetsPlaceholder" class="p-8 text-center">
+                    <svg class="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                     </svg>
-                    Gerador de Anúncios com Imagens
-                </h2>
-
-                <form id="adForm" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="ad_oferta" class="block text-sm font-medium text-gray-300 mb-2">Oferta Principal *</label>
-                            <input type="text" id="ad_oferta" placeholder="Ex: Curso de Marketing Digital" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500" required>
-                        </div>
-                        <div>
-                            <label for="ad_cliente" class="block text-sm font-medium text-gray-300 mb-2">Nome do Cliente *</label>
-                            <input type="text" id="ad_cliente" placeholder="Ex: Empresa XYZ" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500" required>
-                        </div>
-                        <div>
-                            <label for="ad_nicho" class="block text-sm font-medium text-gray-300 mb-2">Função/Nicho *</label>
-                            <input type="text" id="ad_nicho" placeholder="Ex: Empreendedores digitais" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500" required>
-                        </div>
-                        <div>
-                            <label for="ad_estilo" class="block text-sm font-medium text-gray-300 mb-2">Estilo Visual <span class="text-gray-500 font-normal">(opcional)</span></label>
-                            <select id="ad_estilo" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                <option value="">Selecione um estilo...</option>
-                                <option value="Realista">Realista</option>
-                                <option value="Minimalista">Minimalista</option>
-                                <option value="Ilustracao">Ilustração</option>
-                                <option value="Corporativo">Corporativo</option>
-                                <option value="Moderno">Moderno</option>
-                                <option value="Flat Design">Flat Design</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-center pt-4">
-                        <button type="submit" id="adGenerateBtn" class="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold rounded-xl transition-all duration-200 flex items-center gap-3 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
-                            <span id="adBtnText">Gerar Anúncios + Imagens</span>
-                            <svg id="adBtnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                            </svg>
-                            <svg id="adBtnSpinner" class="w-5 h-5 spinner hidden" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </form>
-            </section>
-
-            <!-- Resultados AdBlast -->
-            <section id="adResultsSection" class="hidden">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        Variações Geradas
-                    </h2>
-                    <span id="adResultsCount" class="text-sm text-gray-400"></span>
+                    <p class="text-gray-500 text-sm">Clique em "Gerar Ativos" para criar títulos e descrições<br>otimizados para Anúncios Responsivos do Google Ads</p>
                 </div>
-                <div id="adResultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-            </section>
-
-            <!-- Erro AdBlast -->
-            <section id="adErrorSection" class="hidden">
-                <div class="bg-red-900/20 border border-red-800 rounded-xl p-6 text-center">
-                    <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <h3 class="text-lg font-semibold text-red-400 mb-2">Erro ao gerar anúncios</h3>
-                    <p id="adErrorMessage" class="text-gray-400"></p>
-                </div>
-            </section>
-        </div>
-
+            </div>
+        </section>
     </main>
 
     <!-- Toast Container -->
@@ -356,7 +381,7 @@
     <footer class="border-t border-gray-800 mt-12">
         <div class="max-w-7xl mx-auto px-4 py-6">
             <p class="text-center text-sm text-gray-500">
-                GrowthBlast AI v2.0 | Powered by OpenAI GPT-4o + DALL-E 3 | Growth Team Tool
+                Gerador de Anuncios | ODUO | Powered by GPT-4o
             </p>
         </div>
     </footer>
@@ -365,46 +390,17 @@
         // =============================================
         // CONFIGURAÇÃO
         // =============================================
-        const API_URL = 'http://localhost:5000';
-        const KW_TIMEOUT = 60000;
-        const AD_TIMEOUT = 180000;
+        const API_URL = window.location.origin;
+        const TIMEOUT = 120000; // 2 min para o pipeline completo
 
-        let keywordsData = { fundo_funil: [], meio_funil: [], topo_funil: [] };
-
-        const VARIATION_TYPES = [
-            { label: 'Dor/Problema', color: 'bg-red-900/50 text-red-400' },
-            { label: 'Benefício', color: 'bg-green-900/50 text-green-400' },
-            { label: 'Prova Social', color: 'bg-blue-900/50 text-blue-400' },
-            { label: 'Urgência', color: 'bg-yellow-900/50 text-yellow-400' },
-            { label: 'Curiosidade', color: 'bg-purple-900/50 text-purple-400' }
-        ];
-
-        // =============================================
-        // TAB SWITCHING
-        // =============================================
-        function switchTab(tabName) {
-            // Hide all content
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            // Reset all tabs
-            document.querySelectorAll('.tab-btn').forEach(t => {
-                t.classList.remove('bg-gray-800', 'text-primary-400', 'border-b-2', 'border-primary-500');
-                t.classList.add('text-gray-400', 'hover:text-gray-200', 'hover:bg-gray-800/50');
-            });
-
-            // Show selected content
-            document.getElementById(`content-${tabName}`).classList.add('active');
-            // Highlight selected tab
-            const activeTab = document.getElementById(`tab-${tabName}`);
-            activeTab.classList.remove('text-gray-400', 'hover:text-gray-200', 'hover:bg-gray-800/50');
-            activeTab.classList.add('bg-gray-800', 'text-primary-400', 'border-b-2', 'border-primary-500');
-        }
+        let currentKeywords = [];
 
         // =============================================
         // UTILITIES
         // =============================================
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
-            const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+            const bgColor = type === 'success' ? 'bg-emerald-600' : 'bg-red-600';
             const icon = type === 'success'
                 ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>'
                 : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
@@ -414,199 +410,423 @@
             setTimeout(() => toast.remove(), 3000);
         }
 
+        function setLoading(isLoading, step = '') {
+            document.getElementById('generateBtn').disabled = isLoading;
+            document.getElementById('btnIcon').classList.toggle('hidden', isLoading);
+            document.getElementById('btnSpinner').classList.toggle('hidden', !isLoading);
+
+            if (isLoading) {
+                document.getElementById('btnText').textContent = step || 'Processando...';
+                document.getElementById('pipelineStatus').classList.remove('hidden');
+            } else {
+                document.getElementById('btnText').textContent = 'Iniciar Pipeline Completo';
+            }
+        }
+
+        function updatePipelineStep(step, status) {
+            const stepEl = document.getElementById(`step${step}Status`);
+            const circle = stepEl.querySelector('div');
+            const text = stepEl.querySelector('span');
+
+            if (status === 'active') {
+                circle.className = 'w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center pulse-border border-2';
+                text.className = 'text-sm text-primary-400 font-medium';
+            } else if (status === 'done') {
+                circle.className = 'w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center';
+                circle.innerHTML = '<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+                text.className = 'text-sm text-emerald-400 font-medium';
+            }
+        }
+
+        function resetUI() {
+            document.getElementById('errorSection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('pipelineStatus').classList.add('hidden');
+            setLoading(false);
+        }
+
         // =============================================
-        // KEYBLAST FUNCTIONS
+        // RENDER FUNCTIONS
         // =============================================
-        function setKwLoading(isLoading) {
-            document.getElementById('kwGenerateBtn').disabled = isLoading;
-            document.getElementById('kwBtnText').textContent = isLoading ? 'Gerando...' : 'Gerar Palavras-Chave';
-            document.getElementById('kwBtnIcon').classList.toggle('hidden', isLoading);
-            document.getElementById('kwBtnSpinner').classList.toggle('hidden', !isLoading);
-        }
+        function renderKeywords(keywords, source = 'google_autocomplete') {
+            currentKeywords = keywords;
 
-        function getConcorrenciaBadge(c) {
-            const colors = { 'Baixa': 'bg-green-900/50 text-green-400', 'Média': 'bg-yellow-900/50 text-yellow-400', 'Alta': 'bg-red-900/50 text-red-400' };
-            return `<span class="px-2 py-1 ${colors[c] || colors['Média']} text-xs font-medium rounded">${c}</span>`;
-        }
+            // Atualiza título baseado na fonte
+            const titleEl = document.querySelector('#resultsSection h3');
+            const countEl = document.getElementById('keywordCount');
 
-        function getCorrespondenciaBadge(c) {
-            const colors = { 'Exata': 'bg-purple-900/50 text-purple-400', 'Frase': 'bg-blue-900/50 text-blue-400', 'Ampla': 'bg-gray-700 text-gray-300' };
-            return `<span class="px-2 py-1 ${colors[c] || colors['Frase']} text-xs font-medium rounded">${c}</span>`;
-        }
+            if (source === 'ia_prediction') {
+                countEl.innerHTML = `${keywords.length} termos <span class="text-amber-400">(Previsão IA)</span>`;
+            } else if (source === 'sem_localizacao') {
+                countEl.innerHTML = `${keywords.length} termos <span class="text-blue-400">(Nacional)</span>`;
+            } else {
+                countEl.textContent = `${keywords.length} termos encontrados`;
+            }
 
-        function renderKwTable(tableId, keywords) {
-            document.getElementById(tableId).innerHTML = keywords.map(kw => `
-                <tr class="hover:bg-gray-700/50 transition-colors">
-                    <td class="px-4 py-3 text-white font-medium">${kw.keyword}</td>
-                    <td class="px-4 py-3">${getConcorrenciaBadge(kw.concorrencia)}</td>
-                    <td class="px-4 py-3">${getCorrespondenciaBadge(kw.correspondencia)}</td>
-                </tr>
+            const html = keywords.map((kw, i) => `
+                <div class="keyword-item px-3 py-2 rounded-lg text-sm text-gray-300 cursor-pointer transition-colors flex items-center justify-between group fade-in" style="animation-delay: ${Math.min(i * 20, 500)}ms">
+                    <span class="truncate">${kw}</span>
+                    <button onclick="copyKeyword('${kw.replace(/'/g, "\\'")}')" class="opacity-0 group-hover:opacity-100 p-1 hover:bg-gray-700 rounded transition-all">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                    </button>
+                </div>
             `).join('');
+
+            document.getElementById('keywordsList').innerHTML = html;
         }
 
-        function renderKwResults(data) {
-            keywordsData = data;
-            renderKwTable('fundoFunilTable', data.fundo_funil || []);
-            renderKwTable('meioFunilTable', data.meio_funil || []);
-            renderKwTable('topoFunilTable', data.topo_funil || []);
-            document.getElementById('kwResultsSection').classList.remove('hidden');
-            document.getElementById('kwErrorSection').classList.add('hidden');
-        }
-
-        async function copyFunnelKeywords(funnel) {
-            const map = { 'fundo': 'fundo_funil', 'meio': 'meio_funil', 'topo': 'topo_funil' };
-            const keywords = keywordsData[map[funnel]] || [];
-            try {
-                await navigator.clipboard.writeText(keywords.map(kw => kw.keyword).join('\n'));
-                showToast(`${keywords.length} palavras-chave copiadas!`);
-            } catch (err) { showToast('Erro ao copiar', 'error'); }
-        }
-
-        document.getElementById('keywordForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = {
-                nicho: document.getElementById('kw_nicho').value.trim(),
-                produto: document.getElementById('kw_produto').value.trim(),
-                localizacao: document.getElementById('kw_localizacao').value
+        function getIntencaoBadge(intencao) {
+            const colors = {
+                'Fundo de Funil': 'bg-green-900/50 text-green-400 border-green-700',
+                'Meio de Funil': 'bg-yellow-900/50 text-yellow-400 border-yellow-700',
+                'Topo de Funil': 'bg-blue-900/50 text-blue-400 border-blue-700'
             };
-            if (!formData.nicho || !formData.produto) { showToast('Preencha todos os campos', 'error'); return; }
-
-            setKwLoading(true);
-            document.getElementById('kwErrorSection').classList.add('hidden');
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), KW_TIMEOUT);
-
-            try {
-                const response = await fetch(`${API_URL}/generate_keywords`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData), signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-                const result = await response.json();
-                if (result.success) { renderKwResults(result.data); showToast('Palavras-chave geradas!'); }
-                else { document.getElementById('kwErrorMessage').textContent = result.error; document.getElementById('kwErrorSection').classList.remove('hidden'); }
-            } catch (error) {
-                clearTimeout(timeoutId);
-                document.getElementById('kwErrorMessage').textContent = error.name === 'AbortError' ? 'Timeout' : 'Erro de conexão';
-                document.getElementById('kwErrorSection').classList.remove('hidden');
-            } finally { setKwLoading(false); }
-        });
-
-        // =============================================
-        // ADBLAST FUNCTIONS
-        // =============================================
-        function setAdLoading(isLoading) {
-            document.getElementById('adGenerateBtn').disabled = isLoading;
-            document.getElementById('adBtnText').textContent = isLoading ? 'Gerando textos e imagens...' : 'Gerar Anúncios + Imagens';
-            document.getElementById('adBtnIcon').classList.toggle('hidden', isLoading);
-            document.getElementById('adBtnSpinner').classList.toggle('hidden', !isLoading);
+            // Normaliza o texto
+            const normalized = intencao.includes('Fundo') ? 'Fundo de Funil'
+                : intencao.includes('Topo') ? 'Topo de Funil'
+                : 'Meio de Funil';
+            return `<span class="px-2 py-1 ${colors[normalized]} text-xs font-medium rounded border">${normalized}</span>`;
         }
 
-        async function downloadImage(imageUrl, filename) {
+        function renderAds(ads) {
+            const html = ads.map((ad, i) => {
+                const anuncio = ad.anuncio_vencedor;
+                const fullText = `${anuncio.titulo}\n\n${anuncio.descricao}\n\nCTA: ${anuncio.cta}`;
+
+                return `
+                    <div class="ad-card bg-gray-900/50 rounded-xl border border-gray-700 p-5 fade-in" style="animation-delay: ${i * 100}ms">
+                        <!-- Header -->
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex flex-wrap items-center gap-2">
+                                ${getIntencaoBadge(ad.intencao)}
+                                <span class="text-xs text-gray-500 bg-gray-800 px-2 py-1 rounded">
+                                    "${ad.termo_real}"
+                                </span>
+                            </div>
+                            <button onclick="copyAdToClipboard(\`${fullText.replace(/`/g, '\\`').replace(/\\/g, '\\\\')}\`, this)"
+                                class="text-gray-400 hover:text-white transition-colors p-1" title="Copiar anúncio">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Conteúdo do Anúncio -->
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-xs text-gray-500 uppercase tracking-wide">Título</label>
+                                <p class="text-white font-semibold mt-1">${anuncio.titulo}</p>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500 uppercase tracking-wide">Descrição</label>
+                                <p class="text-gray-300 mt-1 text-sm leading-relaxed whitespace-pre-line">${anuncio.descricao}</p>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500 uppercase tracking-wide">CTA</label>
+                                <div class="mt-2">
+                                    <span class="inline-block px-4 py-2 bg-gradient-to-r from-primary-600 to-emerald-600 text-white text-sm font-medium rounded-lg">${anuncio.cta}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Por que funciona -->
+                        <div class="mt-4 pt-4 border-t border-gray-700">
+                            <div class="flex items-start gap-2">
+                                <svg class="w-4 h-4 text-purple-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                                </svg>
+                                <div>
+                                    <label class="text-xs text-purple-400 font-medium uppercase tracking-wide">Por que funciona</label>
+                                    <p class="text-gray-400 text-xs mt-1">${ad.por_que_funciona}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('adsList').innerHTML = html;
+        }
+
+        // =============================================
+        // COPY FUNCTIONS
+        // =============================================
+        async function copyKeyword(keyword) {
             try {
-                showToast('Iniciando download...');
-                const response = await fetch(imageUrl);
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url; a.download = filename || 'ad-image.png';
-                document.body.appendChild(a); a.click();
-                window.URL.revokeObjectURL(url); a.remove();
-                showToast('Download concluído!');
-            } catch (error) { window.open(imageUrl, '_blank'); showToast('Imagem aberta em nova aba', 'error'); }
+                await navigator.clipboard.writeText(keyword);
+                showToast('Keyword copiada!');
+            } catch (err) {
+                showToast('Erro ao copiar', 'error');
+            }
+        }
+
+        async function copyAllKeywords() {
+            try {
+                await navigator.clipboard.writeText(currentKeywords.join('\n'));
+                showToast(`${currentKeywords.length} keywords copiadas!`);
+            } catch (err) {
+                showToast('Erro ao copiar', 'error');
+            }
         }
 
         async function copyAdToClipboard(text, button) {
             try {
                 await navigator.clipboard.writeText(text);
                 const originalHTML = button.innerHTML;
-                button.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
-                button.classList.remove('text-gray-400'); button.classList.add('text-green-500');
-                showToast('Copiado!');
-                setTimeout(() => { button.innerHTML = originalHTML; button.classList.remove('text-green-500'); button.classList.add('text-gray-400'); }, 2000);
-            } catch (err) { showToast('Erro ao copiar', 'error'); }
+                button.innerHTML = `<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
+                showToast('Anúncio copiado!');
+                setTimeout(() => { button.innerHTML = originalHTML; }, 2000);
+            } catch (err) {
+                showToast('Erro ao copiar', 'error');
+            }
         }
 
-        function createAdCard(ad, index) {
-            const delayClass = `delay-${index + 1}`;
-            const fullText = `${ad.titulo}\n\n${ad.descricao}\n\nCTA: ${ad.cta}`;
-            const variationType = VARIATION_TYPES[index] || VARIATION_TYPES[0];
-            const hasImage = ad.image_url && ad.image_url !== null;
-
-            const imageSection = hasImage ? `
-                <div class="mb-4 relative group">
-                    <img src="${ad.image_url}" alt="Imagem do anúncio ${index + 1}" class="w-full h-48 object-cover rounded-lg border border-gray-700" loading="lazy">
-                    <button onclick="downloadImage('${ad.image_url}', 'anuncio-${index + 1}.png')" class="absolute bottom-2 right-2 bg-gray-900/80 hover:bg-gray-800 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" title="Baixar imagem">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                    </button>
-                </div>
-            ` : '';
-
-            return `
-                <div class="bg-gray-800 rounded-xl border border-gray-700 p-6 hover:border-purple-500/50 transition-all duration-200 fade-in opacity-0 ${delayClass}">
-                    <div class="flex items-start justify-between mb-4">
-                        <span class="px-2 py-1 ${variationType.color} text-xs font-medium rounded">${variationType.label}</span>
-                        <button onclick="copyAdToClipboard(\`${fullText.replace(/`/g, '\\`')}\`, this)" class="text-gray-400 hover:text-white transition-colors p-1" title="Copiar">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                        </button>
-                    </div>
-                    ${imageSection}
-                    <div class="mb-4">
-                        <div class="flex items-center justify-between"><label class="text-xs text-gray-500 uppercase">Título</label><span class="text-xs text-gray-600">${ad.titulo.length}/40</span></div>
-                        <p class="text-white font-semibold mt-1">${ad.titulo}</p>
-                    </div>
-                    <div class="mb-4">
-                        <div class="flex items-center justify-between"><label class="text-xs text-gray-500 uppercase">Descrição</label><span class="text-xs text-gray-600">${ad.descricao.length}/250</span></div>
-                        <p class="text-gray-300 mt-1 text-sm leading-relaxed">${ad.descricao}</p>
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase">CTA</label>
-                        <div class="mt-2"><span class="inline-block px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg">${ad.cta}</span></div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderAdResults(ads) {
-            document.getElementById('adResultsGrid').innerHTML = ads.map((ad, i) => createAdCard(ad, i)).join('');
-            document.getElementById('adResultsCount').textContent = `${ads.length} variações`;
-            document.getElementById('adResultsSection').classList.remove('hidden');
-            document.getElementById('adErrorSection').classList.add('hidden');
-        }
-
-        document.getElementById('adForm').addEventListener('submit', async (e) => {
+        // =============================================
+        // MAIN FORM HANDLER
+        // =============================================
+        document.getElementById('mainForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const formData = {
-                oferta: document.getElementById('ad_oferta').value.trim(),
-                cliente: document.getElementById('ad_cliente').value.trim(),
-                nicho: document.getElementById('ad_nicho').value.trim(),
-                estilo_visual: document.getElementById('ad_estilo').value,
-                generate_images: true
-            };
-            if (!formData.oferta || !formData.cliente || !formData.nicho) { showToast('Preencha todos os campos', 'error'); return; }
 
-            setAdLoading(true);
-            document.getElementById('adErrorSection').classList.add('hidden');
+            const formData = {
+                ramo: document.getElementById('ramo').value.trim(),
+                localizacao: document.getElementById('localizacao').value.trim(),
+                oferta: document.getElementById('oferta').value.trim(),
+                cliente: document.getElementById('cliente').value.trim(),
+                nicho: document.getElementById('nicho').value.trim()
+            };
+
+            if (!formData.ramo || !formData.localizacao || !formData.oferta || !formData.cliente || !formData.nicho) {
+                showToast('Preencha todos os campos', 'error');
+                return;
+            }
+
+            // Reset e inicia
+            document.getElementById('errorSection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            document.getElementById('fallbackBanner').classList.add('hidden');
+            setLoading(true, 'Iniciando Data Hunter...');
+            updatePipelineStep(1, 'active');
 
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), AD_TIMEOUT);
+            const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
 
             try {
-                const response = await fetch(`${API_URL}/generate_ads`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData), signal: controller.signal
+                const response = await fetch(`${API_URL}/full_pipeline`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData),
+                    signal: controller.signal
                 });
+
                 clearTimeout(timeoutId);
                 const result = await response.json();
-                if (result.success) { renderAdResults(result.data); showToast('Anúncios gerados!'); }
-                else { document.getElementById('adErrorMessage').textContent = result.error; document.getElementById('adErrorSection').classList.remove('hidden'); }
+
+                if (result.success) {
+                    // Step 1 done
+                    updatePipelineStep(1, 'done');
+
+                    // Verifica se usou fallback e atualiza mensagem
+                    const fallbackUsed = result.data.fallback_used;
+                    if (fallbackUsed) {
+                        if (fallbackUsed === 'sem_localizacao') {
+                            setLoading(true, 'Expandindo busca nacional...');
+                        } else if (fallbackUsed === 'ia_prediction') {
+                            setLoading(true, 'Gerando keywords com IA...');
+                        }
+                        await new Promise(r => setTimeout(r, 400));
+                    }
+
+                    setLoading(true, 'Processando Ad-Intelligence...');
+                    updatePipelineStep(2, 'active');
+
+                    // Pequena pausa para efeito visual
+                    await new Promise(r => setTimeout(r, 500));
+
+                    updatePipelineStep(2, 'done');
+                    updatePipelineStep(3, 'active');
+
+                    await new Promise(r => setTimeout(r, 300));
+                    updatePipelineStep(3, 'done');
+
+                    // Mostra banner de fallback se usado
+                    if (fallbackUsed) {
+                        const banner = document.getElementById('fallbackBanner');
+                        const titleEl = document.getElementById('fallbackTitle');
+                        const messageEl = document.getElementById('fallbackMessage');
+                        const badgeEl = document.getElementById('fallbackBadge');
+
+                        if (fallbackUsed === 'sem_localizacao') {
+                            titleEl.textContent = 'Busca expandida para todo o Brasil';
+                            messageEl.textContent = result.data.fallback_message || 'Não encontramos resultados locais, mas expandimos a busca nacional.';
+                            badgeEl.textContent = 'Nacional';
+                        } else if (fallbackUsed === 'ia_prediction') {
+                            titleEl.textContent = 'Palavras-chave geradas por IA';
+                            messageEl.textContent = result.data.fallback_message || 'Usamos inteligência artificial para prever os termos de maior volume.';
+                            badgeEl.textContent = 'Previsão IA';
+                        }
+
+                        banner.classList.remove('hidden');
+                    }
+
+                    // Renderiza resultados (com source info)
+                    renderKeywords(result.data.keywords.list, result.data.keywords.source);
+                    renderAds(result.data.ads);
+
+                    document.getElementById('resultsSection').classList.remove('hidden');
+
+                    const sourceLabel = fallbackUsed === 'ia_prediction' ? '(IA)' : fallbackUsed === 'sem_localizacao' ? '(Nacional)' : '';
+                    showToast(`Pipeline completo! ${result.data.keywords.total} keywords ${sourceLabel} + ${result.data.ads.length} anúncios`);
+
+                    // Auto-gera os ativos (títulos + descrições) automaticamente
+                    await generateAssets();
+
+                } else {
+                    throw new Error(result.error);
+                }
+
             } catch (error) {
                 clearTimeout(timeoutId);
-                document.getElementById('adErrorMessage').textContent = error.name === 'AbortError' ? 'Timeout - DALL-E pode demorar' : 'Erro de conexão';
-                document.getElementById('adErrorSection').classList.remove('hidden');
-            } finally { setAdLoading(false); }
+                document.getElementById('errorMessage').textContent =
+                    error.name === 'AbortError' ? 'Timeout - tente novamente' : error.message || 'Erro de conexão';
+                document.getElementById('errorSection').classList.remove('hidden');
+                showToast('Erro no pipeline', 'error');
+            } finally {
+                setLoading(false);
+            }
         });
+
+        // =============================================
+        // ATIVOS MASSIVOS - Google Ads Responsivo
+        // =============================================
+        let currentAssets = { titulos: [], descricoes: [] };
+
+        function setAssetsLoading(isLoading) {
+            document.getElementById('generateAssetsBtn').disabled = isLoading;
+            document.getElementById('assetsBtnText').textContent = isLoading ? 'Gerando...' : 'Gerar Ativos';
+            document.getElementById('assetsBtnIcon').classList.toggle('hidden', isLoading);
+            document.getElementById('assetsBtnSpinner').classList.toggle('hidden', !isLoading);
+        }
+
+        function renderAssets(assets) {
+            currentAssets = assets;
+
+            // Renderiza Títulos
+            const titlesHtml = assets.titulos.map((titulo, i) => `
+                <div class="flex items-center justify-between bg-gray-900/50 rounded-lg px-3 py-2 group hover:bg-gray-900 transition-colors fade-in" style="animation-delay: ${i * 50}ms">
+                    <div class="flex-1 min-w-0">
+                        <span class="text-sm text-gray-300 truncate block">${titulo}</span>
+                        <span class="text-xs text-gray-600">${titulo.length}/30</span>
+                    </div>
+                    <button onclick="copyAssetItem('${titulo.replace(/'/g, "\\'")}', this)"
+                        class="ml-2 p-1.5 text-gray-500 hover:text-orange-400 transition-colors opacity-0 group-hover:opacity-100">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+            document.getElementById('titlesList').innerHTML = titlesHtml;
+
+            // Renderiza Descrições
+            const descriptionsHtml = assets.descricoes.map((desc, i) => `
+                <div class="bg-gray-900/50 rounded-lg p-3 group hover:bg-gray-900 transition-colors fade-in" style="animation-delay: ${i * 100}ms">
+                    <div class="flex items-start justify-between gap-2">
+                        <div class="flex-1">
+                            <p class="text-sm text-gray-300 leading-relaxed">${desc}</p>
+                            <span class="text-xs text-gray-600 mt-1 block">${desc.length}/90</span>
+                        </div>
+                        <button onclick="copyAssetItem(\`${desc.replace(/`/g, '\\`')}\`, this)"
+                            class="p-1.5 text-gray-500 hover:text-amber-400 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('descriptionsList').innerHTML = descriptionsHtml;
+
+            // Mostra o conteúdo e esconde o placeholder
+            document.getElementById('assetsContent').classList.remove('hidden');
+            document.getElementById('assetsPlaceholder').classList.add('hidden');
+        }
+
+        async function copyAssetItem(text, button) {
+            try {
+                await navigator.clipboard.writeText(text);
+                const originalHTML = button.innerHTML;
+                button.innerHTML = `<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
+                showToast('Copiado!');
+                setTimeout(() => { button.innerHTML = originalHTML; }, 1500);
+            } catch (err) {
+                showToast('Erro ao copiar', 'error');
+            }
+        }
+
+        async function copyAllTitles() {
+            try {
+                await navigator.clipboard.writeText(currentAssets.titulos.join('\n'));
+                showToast(`${currentAssets.titulos.length} títulos copiados!`);
+            } catch (err) {
+                showToast('Erro ao copiar', 'error');
+            }
+        }
+
+        async function copyAllDescriptions() {
+            try {
+                await navigator.clipboard.writeText(currentAssets.descricoes.join('\n\n'));
+                showToast(`${currentAssets.descricoes.length} descrições copiadas!`);
+            } catch (err) {
+                showToast('Erro ao copiar', 'error');
+            }
+        }
+
+        async function generateAssets() {
+            const formData = {
+                ramo: document.getElementById('ramo').value.trim(),
+                localizacao: document.getElementById('localizacao').value.trim(),
+                oferta: document.getElementById('oferta').value.trim(),
+                keywords: currentKeywords
+            };
+
+            if (!formData.ramo || !formData.localizacao || !formData.oferta) {
+                showToast('Preencha Ramo, Localização e Oferta primeiro', 'error');
+                return;
+            }
+
+            setAssetsLoading(true);
+
+            try {
+                const response = await fetch(`${API_URL}/generate_assets`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    renderAssets(result.data);
+                    showToast(`${result.data.titulos.length} títulos + ${result.data.descricoes.length} descrições gerados!`);
+                } else {
+                    throw new Error(result.error);
+                }
+
+            } catch (error) {
+                showToast(error.message || 'Erro ao gerar ativos', 'error');
+            } finally {
+                setAssetsLoading(false);
+            }
+        }
+
+        // Mostra a seção de ativos quando o pipeline principal termina
+        const originalRenderKeywords = renderKeywords;
+        renderKeywords = function(keywords) {
+            originalRenderKeywords(keywords);
+            document.getElementById('assetsSection').classList.remove('hidden');
+        };
     </script>
 </body>
 </html>
