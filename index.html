@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AdBlast AI - Gerador de Anúncios</title>
+    <title>GrowthBlast AI - Suite de Ferramentas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -29,7 +29,6 @@
         }
     </script>
     <style>
-        /* Animação do spinner */
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
@@ -37,191 +36,317 @@
             animation: spin 1s linear infinite;
         }
 
-        /* Animação de fade-in para os cards */
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .fade-in {
             animation: fadeIn 0.4s ease-out forwards;
         }
 
-        /* Delay para animação escalonada dos cards */
         .delay-1 { animation-delay: 0.1s; }
         .delay-2 { animation-delay: 0.2s; }
         .delay-3 { animation-delay: 0.3s; }
         .delay-4 { animation-delay: 0.4s; }
         .delay-5 { animation-delay: 0.5s; }
 
-        /* Toast notification */
         .toast {
             animation: slideIn 0.3s ease-out;
         }
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 3px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
         }
     </style>
 </head>
 <body class="dark bg-gray-900 min-h-screen">
     <!-- Header -->
     <header class="border-b border-gray-800">
-        <div class="max-w-6xl mx-auto px-4 py-6">
+        <div class="max-w-7xl mx-auto px-4 py-6">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
+                <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-purple-600 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-white">AdBlast AI</h1>
-                    <p class="text-sm text-gray-400">Gerador de Anúncios de Alta Conversão</p>
+                    <h1 class="text-2xl font-bold text-white">GrowthBlast AI</h1>
+                    <p class="text-sm text-gray-400">Suite de Ferramentas para Growth Team</p>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-8">
-        <!-- Formulário -->
-        <section class="bg-gray-800 rounded-2xl p-6 mb-8 border border-gray-700">
-            <h2 class="text-lg font-semibold text-white mb-6 flex items-center gap-2">
-                <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+    <!-- Tabs Navigation -->
+    <div class="max-w-7xl mx-auto px-4 pt-6">
+        <div class="flex gap-2 border-b border-gray-700">
+            <button
+                onclick="switchTab('keyblast')"
+                id="tab-keyblast"
+                class="tab-btn px-6 py-3 text-sm font-medium rounded-t-lg transition-all flex items-center gap-2 bg-gray-800 text-primary-400 border-b-2 border-primary-500"
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                 </svg>
-                Informações do Anúncio
-            </h2>
+                KeyBlast
+                <span class="text-xs text-gray-500">Palavras-Chave</span>
+            </button>
+            <button
+                onclick="switchTab('adblast')"
+                id="tab-adblast"
+                class="tab-btn px-6 py-3 text-sm font-medium rounded-t-lg transition-all flex items-center gap-2 text-gray-400 hover:text-gray-200 hover:bg-gray-800/50"
+            >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                AdBlast
+                <span class="text-xs text-gray-500">Anúncios + Imagens</span>
+            </button>
+        </div>
+    </div>
 
-            <form id="adForm" class="space-y-6">
-                <!-- Grid de inputs -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Oferta Principal -->
-                    <div>
-                        <label for="oferta" class="block text-sm font-medium text-gray-300 mb-2">
-                            Oferta Principal *
-                        </label>
-                        <input
-                            type="text"
-                            id="oferta"
-                            name="oferta"
-                            placeholder="Ex: Curso de Marketing Digital"
-                            class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                            required
-                        >
-                    </div>
+    <main class="max-w-7xl mx-auto px-4 py-8">
 
-                    <!-- Nome do Cliente -->
-                    <div>
-                        <label for="cliente" class="block text-sm font-medium text-gray-300 mb-2">
-                            Nome do Cliente *
-                        </label>
-                        <input
-                            type="text"
-                            id="cliente"
-                            name="cliente"
-                            placeholder="Ex: Empresa XYZ"
-                            class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                            required
-                        >
-                    </div>
-
-                    <!-- Função/Nicho -->
-                    <div>
-                        <label for="nicho" class="block text-sm font-medium text-gray-300 mb-2">
-                            Função/Nicho *
-                        </label>
-                        <input
-                            type="text"
-                            id="nicho"
-                            name="nicho"
-                            placeholder="Ex: Empreendedores digitais"
-                            class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                            required
-                        >
-                    </div>
-
-                    <!-- Estilo Visual (Opcional) -->
-                    <div>
-                        <label for="estilo_visual" class="block text-sm font-medium text-gray-300 mb-2">
-                            Estilo Visual
-                            <span class="text-gray-500 font-normal">(opcional)</span>
-                        </label>
-                        <select
-                            id="estilo_visual"
-                            name="estilo_visual"
-                            class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-                        >
-                            <option value="">Selecione um estilo...</option>
-                            <option value="Realista">Realista</option>
-                            <option value="Minimalista">Minimalista</option>
-                            <option value="Ilustracao">Ilustração</option>
-                            <option value="Corporativo">Corporativo</option>
-                            <option value="Moderno">Moderno</option>
-                            <option value="Flat Design">Flat Design</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Botão de Gerar -->
-                <div class="flex justify-center pt-4">
-                    <button
-                        type="submit"
-                        id="generateBtn"
-                        class="px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-500 hover:to-primary-600 text-white font-semibold rounded-xl transition-all duration-200 flex items-center gap-3 shadow-lg shadow-primary-900/30 hover:shadow-primary-900/50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <span id="btnText">Gerar Variações</span>
-                        <svg id="btnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                        <!-- Spinner (hidden by default) -->
-                        <svg id="btnSpinner" class="w-5 h-5 spinner hidden" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </button>
-                </div>
-            </form>
-        </section>
-
-        <!-- Área de Resultados -->
-        <section id="resultsSection" class="hidden">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-lg font-semibold text-white flex items-center gap-2">
-                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        <!-- ============================================= -->
+        <!-- TAB: KEYBLAST - Gerador de Palavras-Chave -->
+        <!-- ============================================= -->
+        <div id="content-keyblast" class="tab-content active">
+            <!-- Formulário KeyBlast -->
+            <section class="bg-gray-800 rounded-2xl p-6 mb-8 border border-gray-700">
+                <h2 class="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
-                    Variações Geradas
+                    Pesquisa de Palavras-Chave
                 </h2>
-                <span id="resultsCount" class="text-sm text-gray-400"></span>
-            </div>
 
-            <!-- Grid de Cards -->
-            <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Cards serão inseridos aqui via JavaScript -->
-            </div>
-        </section>
+                <form id="keywordForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label for="kw_nicho" class="block text-sm font-medium text-gray-300 mb-2">Nicho/Ramo *</label>
+                            <input type="text" id="kw_nicho" placeholder="Ex: Marketing Digital" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500" required>
+                        </div>
+                        <div>
+                            <label for="kw_produto" class="block text-sm font-medium text-gray-300 mb-2">Produto/Oferta *</label>
+                            <input type="text" id="kw_produto" placeholder="Ex: Curso de Tráfego Pago" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500" required>
+                        </div>
+                        <div>
+                            <label for="kw_localizacao" class="block text-sm font-medium text-gray-300 mb-2">Localização *</label>
+                            <select id="kw_localizacao" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                <option value="Brasil">Brasil</option>
+                                <option value="Portugal">Portugal</option>
+                                <option value="Estados Unidos">Estados Unidos</option>
+                                <option value="América Latina">América Latina</option>
+                            </select>
+                        </div>
+                    </div>
 
-        <!-- Estado de Erro -->
-        <section id="errorSection" class="hidden">
-            <div class="bg-red-900/20 border border-red-800 rounded-xl p-6 text-center">
-                <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <h3 class="text-lg font-semibold text-red-400 mb-2">Erro ao gerar anúncios</h3>
-                <p id="errorMessage" class="text-gray-400"></p>
-            </div>
-        </section>
+                    <div class="flex justify-center pt-4">
+                        <button type="submit" id="kwGenerateBtn" class="px-8 py-4 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-500 hover:to-primary-600 text-white font-semibold rounded-xl transition-all duration-200 flex items-center gap-3 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span id="kwBtnText">Gerar Palavras-Chave</span>
+                            <svg id="kwBtnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <svg id="kwBtnSpinner" class="w-5 h-5 spinner hidden" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Resultados KeyBlast -->
+            <section id="kwResultsSection" class="hidden space-y-6">
+                <!-- Fundo de Funil -->
+                <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden fade-in">
+                    <div class="p-4 border-b border-gray-700 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            <h3 class="text-lg font-semibold text-white">Fundo de Funil</h3>
+                            <span class="text-sm text-gray-400">(Intenção de Compra)</span>
+                        </div>
+                        <button onclick="copyFunnelKeywords('fundo')" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            Copiar Lista
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full">
+                            <thead class="bg-gray-900/50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Palavra-Chave</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Concorrência</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Correspondência</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fundoFunilTable" class="divide-y divide-gray-700"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Meio de Funil -->
+                <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden fade-in">
+                    <div class="p-4 border-b border-gray-700 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <h3 class="text-lg font-semibold text-white">Meio de Funil</h3>
+                            <span class="text-sm text-gray-400">(Comparação/Pesquisa)</span>
+                        </div>
+                        <button onclick="copyFunnelKeywords('meio')" class="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            Copiar Lista
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full">
+                            <thead class="bg-gray-900/50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Palavra-Chave</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Concorrência</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Correspondência</th>
+                                </tr>
+                            </thead>
+                            <tbody id="meioFunilTable" class="divide-y divide-gray-700"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Topo de Funil -->
+                <div class="bg-gray-800 rounded-2xl border border-gray-700 overflow-hidden fade-in">
+                    <div class="p-4 border-b border-gray-700 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                            <h3 class="text-lg font-semibold text-white">Topo de Funil</h3>
+                            <span class="text-sm text-gray-400">(Curiosidade/Problema)</span>
+                        </div>
+                        <button onclick="copyFunnelKeywords('topo')" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            Copiar Lista
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto custom-scrollbar">
+                        <table class="w-full">
+                            <thead class="bg-gray-900/50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Palavra-Chave</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Concorrência</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Correspondência</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topoFunilTable" class="divide-y divide-gray-700"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Erro KeyBlast -->
+            <section id="kwErrorSection" class="hidden">
+                <div class="bg-red-900/20 border border-red-800 rounded-xl p-6 text-center">
+                    <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <h3 class="text-lg font-semibold text-red-400 mb-2">Erro ao gerar palavras-chave</h3>
+                    <p id="kwErrorMessage" class="text-gray-400"></p>
+                </div>
+            </section>
+        </div>
+
+        <!-- ============================================= -->
+        <!-- TAB: ADBLAST - Gerador de Anúncios -->
+        <!-- ============================================= -->
+        <div id="content-adblast" class="tab-content">
+            <!-- Formulário AdBlast -->
+            <section class="bg-gray-800 rounded-2xl p-6 mb-8 border border-gray-700">
+                <h2 class="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                    </svg>
+                    Gerador de Anúncios com Imagens
+                </h2>
+
+                <form id="adForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="ad_oferta" class="block text-sm font-medium text-gray-300 mb-2">Oferta Principal *</label>
+                            <input type="text" id="ad_oferta" placeholder="Ex: Curso de Marketing Digital" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        </div>
+                        <div>
+                            <label for="ad_cliente" class="block text-sm font-medium text-gray-300 mb-2">Nome do Cliente *</label>
+                            <input type="text" id="ad_cliente" placeholder="Ex: Empresa XYZ" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        </div>
+                        <div>
+                            <label for="ad_nicho" class="block text-sm font-medium text-gray-300 mb-2">Função/Nicho *</label>
+                            <input type="text" id="ad_nicho" placeholder="Ex: Empreendedores digitais" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500" required>
+                        </div>
+                        <div>
+                            <label for="ad_estilo" class="block text-sm font-medium text-gray-300 mb-2">Estilo Visual <span class="text-gray-500 font-normal">(opcional)</span></label>
+                            <select id="ad_estilo" class="w-full px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="">Selecione um estilo...</option>
+                                <option value="Realista">Realista</option>
+                                <option value="Minimalista">Minimalista</option>
+                                <option value="Ilustracao">Ilustração</option>
+                                <option value="Corporativo">Corporativo</option>
+                                <option value="Moderno">Moderno</option>
+                                <option value="Flat Design">Flat Design</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center pt-4">
+                        <button type="submit" id="adGenerateBtn" class="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold rounded-xl transition-all duration-200 flex items-center gap-3 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span id="adBtnText">Gerar Anúncios + Imagens</span>
+                            <svg id="adBtnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <svg id="adBtnSpinner" class="w-5 h-5 spinner hidden" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Resultados AdBlast -->
+            <section id="adResultsSection" class="hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Variações Geradas
+                    </h2>
+                    <span id="adResultsCount" class="text-sm text-gray-400"></span>
+                </div>
+                <div id="adResultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </section>
+
+            <!-- Erro AdBlast -->
+            <section id="adErrorSection" class="hidden">
+                <div class="bg-red-900/20 border border-red-800 rounded-xl p-6 text-center">
+                    <svg class="w-12 h-12 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <h3 class="text-lg font-semibold text-red-400 mb-2">Erro ao gerar anúncios</h3>
+                    <p id="adErrorMessage" class="text-gray-400"></p>
+                </div>
+            </section>
+        </div>
+
     </main>
 
     <!-- Toast Container -->
@@ -229,9 +354,9 @@
 
     <!-- Footer -->
     <footer class="border-t border-gray-800 mt-12">
-        <div class="max-w-6xl mx-auto px-4 py-6">
+        <div class="max-w-7xl mx-auto px-4 py-6">
             <p class="text-center text-sm text-gray-500">
-                AdBlast AI v1.1 | Powered by OpenAI GPT-4o + DALL-E 3 | Growth Team Tool
+                GrowthBlast AI v2.0 | Powered by OpenAI GPT-4o + DALL-E 3 | Growth Team Tool
             </p>
         </div>
     </footer>
@@ -241,9 +366,11 @@
         // CONFIGURAÇÃO
         // =============================================
         const API_URL = 'http://localhost:5000';
-        const REQUEST_TIMEOUT = 180000; // 180 segundos (DALL-E pode demorar)
+        const KW_TIMEOUT = 60000;
+        const AD_TIMEOUT = 180000;
 
-        // Tipos de variação (sincronizado com o prompt do backend)
+        let keywordsData = { fundo_funil: [], meio_funil: [], topo_funil: [] };
+
         const VARIATION_TYPES = [
             { label: 'Dor/Problema', color: 'bg-red-900/50 text-red-400' },
             { label: 'Benefício', color: 'bg-green-900/50 text-green-400' },
@@ -253,128 +380,129 @@
         ];
 
         // =============================================
-        // ELEMENTOS DO DOM
+        // TAB SWITCHING
         // =============================================
-        const form = document.getElementById('adForm');
-        const generateBtn = document.getElementById('generateBtn');
-        const btnText = document.getElementById('btnText');
-        const btnIcon = document.getElementById('btnIcon');
-        const btnSpinner = document.getElementById('btnSpinner');
-        const resultsSection = document.getElementById('resultsSection');
-        const resultsGrid = document.getElementById('resultsGrid');
-        const resultsCount = document.getElementById('resultsCount');
-        const errorSection = document.getElementById('errorSection');
-        const errorMessage = document.getElementById('errorMessage');
-        const toastContainer = document.getElementById('toastContainer');
+        function switchTab(tabName) {
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            // Reset all tabs
+            document.querySelectorAll('.tab-btn').forEach(t => {
+                t.classList.remove('bg-gray-800', 'text-primary-400', 'border-b-2', 'border-primary-500');
+                t.classList.add('text-gray-400', 'hover:text-gray-200', 'hover:bg-gray-800/50');
+            });
+
+            // Show selected content
+            document.getElementById(`content-${tabName}`).classList.add('active');
+            // Highlight selected tab
+            const activeTab = document.getElementById(`tab-${tabName}`);
+            activeTab.classList.remove('text-gray-400', 'hover:text-gray-200', 'hover:bg-gray-800/50');
+            activeTab.classList.add('bg-gray-800', 'text-primary-400', 'border-b-2', 'border-primary-500');
+        }
 
         // =============================================
-        // FUNÇÕES UTILITÁRIAS
+        // UTILITIES
         // =============================================
-
-        /**
-         * Mostra um toast notification
-         */
         function showToast(message, type = 'success') {
             const toast = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
             const icon = type === 'success'
                 ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>'
                 : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>';
-
             toast.className = `toast ${bgColor} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2`;
-            toast.innerHTML = `
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">${icon}</svg>
-                <span>${message}</span>
-            `;
-
-            toastContainer.appendChild(toast);
-
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
+            toast.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">${icon}</svg><span>${message}</span>`;
+            document.getElementById('toastContainer').appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
 
-        /**
-         * Copia texto para a área de transferência
-         */
-        async function copyToClipboard(text, button) {
+        // =============================================
+        // KEYBLAST FUNCTIONS
+        // =============================================
+        function setKwLoading(isLoading) {
+            document.getElementById('kwGenerateBtn').disabled = isLoading;
+            document.getElementById('kwBtnText').textContent = isLoading ? 'Gerando...' : 'Gerar Palavras-Chave';
+            document.getElementById('kwBtnIcon').classList.toggle('hidden', isLoading);
+            document.getElementById('kwBtnSpinner').classList.toggle('hidden', !isLoading);
+        }
+
+        function getConcorrenciaBadge(c) {
+            const colors = { 'Baixa': 'bg-green-900/50 text-green-400', 'Média': 'bg-yellow-900/50 text-yellow-400', 'Alta': 'bg-red-900/50 text-red-400' };
+            return `<span class="px-2 py-1 ${colors[c] || colors['Média']} text-xs font-medium rounded">${c}</span>`;
+        }
+
+        function getCorrespondenciaBadge(c) {
+            const colors = { 'Exata': 'bg-purple-900/50 text-purple-400', 'Frase': 'bg-blue-900/50 text-blue-400', 'Ampla': 'bg-gray-700 text-gray-300' };
+            return `<span class="px-2 py-1 ${colors[c] || colors['Frase']} text-xs font-medium rounded">${c}</span>`;
+        }
+
+        function renderKwTable(tableId, keywords) {
+            document.getElementById(tableId).innerHTML = keywords.map(kw => `
+                <tr class="hover:bg-gray-700/50 transition-colors">
+                    <td class="px-4 py-3 text-white font-medium">${kw.keyword}</td>
+                    <td class="px-4 py-3">${getConcorrenciaBadge(kw.concorrencia)}</td>
+                    <td class="px-4 py-3">${getCorrespondenciaBadge(kw.correspondencia)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderKwResults(data) {
+            keywordsData = data;
+            renderKwTable('fundoFunilTable', data.fundo_funil || []);
+            renderKwTable('meioFunilTable', data.meio_funil || []);
+            renderKwTable('topoFunilTable', data.topo_funil || []);
+            document.getElementById('kwResultsSection').classList.remove('hidden');
+            document.getElementById('kwErrorSection').classList.add('hidden');
+        }
+
+        async function copyFunnelKeywords(funnel) {
+            const map = { 'fundo': 'fundo_funil', 'meio': 'meio_funil', 'topo': 'topo_funil' };
+            const keywords = keywordsData[map[funnel]] || [];
             try {
-                await navigator.clipboard.writeText(text);
-
-                // Feedback visual
-                const originalHTML = button.innerHTML;
-                button.innerHTML = `
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                `;
-                button.classList.remove('text-gray-400', 'hover:text-white');
-                button.classList.add('text-green-500');
-
-                showToast('Copiado para a área de transferência!');
-
-                setTimeout(() => {
-                    button.innerHTML = originalHTML;
-                    button.classList.remove('text-green-500');
-                    button.classList.add('text-gray-400', 'hover:text-white');
-                }, 2000);
-            } catch (err) {
-                showToast('Erro ao copiar', 'error');
-            }
+                await navigator.clipboard.writeText(keywords.map(kw => kw.keyword).join('\n'));
+                showToast(`${keywords.length} palavras-chave copiadas!`);
+            } catch (err) { showToast('Erro ao copiar', 'error'); }
         }
 
-        /**
-         * Define o estado de loading do botão
-         */
-        function setLoading(isLoading) {
-            generateBtn.disabled = isLoading;
-            btnText.textContent = isLoading ? 'Gerando textos e imagens...' : 'Gerar Variações';
-            btnIcon.classList.toggle('hidden', isLoading);
-            btnSpinner.classList.toggle('hidden', !isLoading);
-        }
+        document.getElementById('keywordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = {
+                nicho: document.getElementById('kw_nicho').value.trim(),
+                produto: document.getElementById('kw_produto').value.trim(),
+                localizacao: document.getElementById('kw_localizacao').value
+            };
+            if (!formData.nicho || !formData.produto) { showToast('Preencha todos os campos', 'error'); return; }
 
-        /**
-         * Valida os campos e mostra feedback visual
-         */
-        function validateFields() {
-            const fields = ['oferta', 'cliente', 'nicho'];
-            let isValid = true;
+            setKwLoading(true);
+            document.getElementById('kwErrorSection').classList.add('hidden');
 
-            fields.forEach(fieldId => {
-                const input = document.getElementById(fieldId);
-                const value = input.value.trim();
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), KW_TIMEOUT);
 
-                if (!value) {
-                    input.classList.add('border-red-500', 'ring-2', 'ring-red-500/50');
-                    input.classList.remove('border-gray-600');
-                    isValid = false;
-                } else {
-                    input.classList.remove('border-red-500', 'ring-2', 'ring-red-500/50');
-                    input.classList.add('border-gray-600');
-                }
-            });
-
-            return isValid;
-        }
-
-        /**
-         * Remove validação visual ao digitar
-         */
-        function clearValidationOnInput() {
-            ['oferta', 'cliente', 'nicho'].forEach(fieldId => {
-                const input = document.getElementById(fieldId);
-                input.addEventListener('input', () => {
-                    if (input.value.trim()) {
-                        input.classList.remove('border-red-500', 'ring-2', 'ring-red-500/50');
-                        input.classList.add('border-gray-600');
-                    }
+            try {
+                const response = await fetch(`${API_URL}/generate_keywords`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData), signal: controller.signal
                 });
-            });
+                clearTimeout(timeoutId);
+                const result = await response.json();
+                if (result.success) { renderKwResults(result.data); showToast('Palavras-chave geradas!'); }
+                else { document.getElementById('kwErrorMessage').textContent = result.error; document.getElementById('kwErrorSection').classList.remove('hidden'); }
+            } catch (error) {
+                clearTimeout(timeoutId);
+                document.getElementById('kwErrorMessage').textContent = error.name === 'AbortError' ? 'Timeout' : 'Erro de conexão';
+                document.getElementById('kwErrorSection').classList.remove('hidden');
+            } finally { setKwLoading(false); }
+        });
+
+        // =============================================
+        // ADBLAST FUNCTIONS
+        // =============================================
+        function setAdLoading(isLoading) {
+            document.getElementById('adGenerateBtn').disabled = isLoading;
+            document.getElementById('adBtnText').textContent = isLoading ? 'Gerando textos e imagens...' : 'Gerar Anúncios + Imagens';
+            document.getElementById('adBtnIcon').classList.toggle('hidden', isLoading);
+            document.getElementById('adBtnSpinner').classList.toggle('hidden', !isLoading);
         }
 
-        /**
-         * Faz download da imagem
-         */
         async function downloadImage(imageUrl, filename) {
             try {
                 showToast('Iniciando download...');
@@ -382,189 +510,102 @@
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = url;
-                a.download = filename || 'ad-image.png';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                a.remove();
+                a.href = url; a.download = filename || 'ad-image.png';
+                document.body.appendChild(a); a.click();
+                window.URL.revokeObjectURL(url); a.remove();
                 showToast('Download concluído!');
-            } catch (error) {
-                console.error('Erro no download:', error);
-                // Fallback: abrir em nova aba
-                window.open(imageUrl, '_blank');
-                showToast('Imagem aberta em nova aba', 'error');
-            }
+            } catch (error) { window.open(imageUrl, '_blank'); showToast('Imagem aberta em nova aba', 'error'); }
         }
 
-        /**
-         * Cria um card de anúncio
-         */
+        async function copyAdToClipboard(text, button) {
+            try {
+                await navigator.clipboard.writeText(text);
+                const originalHTML = button.innerHTML;
+                button.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>`;
+                button.classList.remove('text-gray-400'); button.classList.add('text-green-500');
+                showToast('Copiado!');
+                setTimeout(() => { button.innerHTML = originalHTML; button.classList.remove('text-green-500'); button.classList.add('text-gray-400'); }, 2000);
+            } catch (err) { showToast('Erro ao copiar', 'error'); }
+        }
+
         function createAdCard(ad, index) {
             const delayClass = `delay-${index + 1}`;
             const fullText = `${ad.titulo}\n\n${ad.descricao}\n\nCTA: ${ad.cta}`;
             const variationType = VARIATION_TYPES[index] || VARIATION_TYPES[0];
             const hasImage = ad.image_url && ad.image_url !== null;
 
-            // Seção da imagem (se existir)
             const imageSection = hasImage ? `
                 <div class="mb-4 relative group">
-                    <img
-                        src="${ad.image_url}"
-                        alt="Imagem do anúncio ${index + 1}"
-                        class="w-full h-48 object-cover rounded-lg border border-gray-700"
-                        loading="lazy"
-                    >
-                    <button
-                        onclick="downloadImage('${ad.image_url}', 'anuncio-${index + 1}.png')"
-                        class="absolute bottom-2 right-2 bg-gray-900/80 hover:bg-gray-800 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Baixar imagem"
-                    >
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                        </svg>
+                    <img src="${ad.image_url}" alt="Imagem do anúncio ${index + 1}" class="w-full h-48 object-cover rounded-lg border border-gray-700" loading="lazy">
+                    <button onclick="downloadImage('${ad.image_url}', 'anuncio-${index + 1}.png')" class="absolute bottom-2 right-2 bg-gray-900/80 hover:bg-gray-800 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity" title="Baixar imagem">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                     </button>
                 </div>
             ` : '';
 
             return `
-                <div class="bg-gray-800 rounded-xl border border-gray-700 p-6 hover:border-primary-500/50 transition-all duration-200 fade-in opacity-0 ${delayClass}">
-                    <!-- Header do Card -->
+                <div class="bg-gray-800 rounded-xl border border-gray-700 p-6 hover:border-purple-500/50 transition-all duration-200 fade-in opacity-0 ${delayClass}">
                     <div class="flex items-start justify-between mb-4">
-                        <div class="flex flex-col gap-1">
-                            <span class="px-2 py-1 ${variationType.color} text-xs font-medium rounded inline-block w-fit">
-                                ${variationType.label}
-                            </span>
-                        </div>
-                        <button
-                            onclick="copyToClipboard(\`${fullText.replace(/`/g, '\\`')}\`, this)"
-                            class="text-gray-400 hover:text-white transition-colors p-1"
-                            title="Copiar anúncio completo"
-                        >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                            </svg>
+                        <span class="px-2 py-1 ${variationType.color} text-xs font-medium rounded">${variationType.label}</span>
+                        <button onclick="copyAdToClipboard(\`${fullText.replace(/`/g, '\\`')}\`, this)" class="text-gray-400 hover:text-white transition-colors p-1" title="Copiar">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                         </button>
                     </div>
-
-                    <!-- Imagem (se disponível) -->
                     ${imageSection}
-
-                    <!-- Título -->
                     <div class="mb-4">
-                        <div class="flex items-center justify-between">
-                            <label class="text-xs text-gray-500 uppercase tracking-wider">Título</label>
-                            <span class="text-xs text-gray-600">${ad.titulo.length}/40</span>
-                        </div>
+                        <div class="flex items-center justify-between"><label class="text-xs text-gray-500 uppercase">Título</label><span class="text-xs text-gray-600">${ad.titulo.length}/40</span></div>
                         <p class="text-white font-semibold mt-1">${ad.titulo}</p>
                     </div>
-
-                    <!-- Descrição -->
                     <div class="mb-4">
-                        <div class="flex items-center justify-between">
-                            <label class="text-xs text-gray-500 uppercase tracking-wider">Descrição</label>
-                            <span class="text-xs text-gray-600">${ad.descricao.length}/250</span>
-                        </div>
+                        <div class="flex items-center justify-between"><label class="text-xs text-gray-500 uppercase">Descrição</label><span class="text-xs text-gray-600">${ad.descricao.length}/250</span></div>
                         <p class="text-gray-300 mt-1 text-sm leading-relaxed">${ad.descricao}</p>
                     </div>
-
-                    <!-- CTA -->
                     <div>
-                        <label class="text-xs text-gray-500 uppercase tracking-wider">CTA</label>
-                        <div class="mt-2">
-                            <span class="inline-block px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg">
-                                ${ad.cta}
-                            </span>
-                        </div>
+                        <label class="text-xs text-gray-500 uppercase">CTA</label>
+                        <div class="mt-2"><span class="inline-block px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg">${ad.cta}</span></div>
                     </div>
                 </div>
             `;
         }
 
-        /**
-         * Renderiza os resultados
-         */
-        function renderResults(ads) {
-            resultsGrid.innerHTML = ads.map((ad, index) => createAdCard(ad, index)).join('');
-            resultsCount.textContent = `${ads.length} variações`;
-            resultsSection.classList.remove('hidden');
-            errorSection.classList.add('hidden');
+        function renderAdResults(ads) {
+            document.getElementById('adResultsGrid').innerHTML = ads.map((ad, i) => createAdCard(ad, i)).join('');
+            document.getElementById('adResultsCount').textContent = `${ads.length} variações`;
+            document.getElementById('adResultsSection').classList.remove('hidden');
+            document.getElementById('adErrorSection').classList.add('hidden');
         }
 
-        /**
-         * Mostra erro
-         */
-        function showError(message) {
-            errorMessage.textContent = message;
-            errorSection.classList.remove('hidden');
-            resultsSection.classList.add('hidden');
-        }
-
-        // =============================================
-        // EVENT LISTENERS
-        // =============================================
-
-        // Inicializa limpeza de validação ao digitar
-        clearValidationOnInput();
-
-        form.addEventListener('submit', async (e) => {
+        document.getElementById('adForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            // Validação visual dos campos
-            if (!validateFields()) {
-                showToast('Preencha todos os campos obrigatórios', 'error');
-                return;
-            }
-
-            // Coleta os dados do formulário
-            const estiloVisual = document.getElementById('estilo_visual').value;
             const formData = {
-                oferta: document.getElementById('oferta').value.trim(),
-                cliente: document.getElementById('cliente').value.trim(),
-                nicho: document.getElementById('nicho').value.trim(),
-                estilo_visual: estiloVisual,
+                oferta: document.getElementById('ad_oferta').value.trim(),
+                cliente: document.getElementById('ad_cliente').value.trim(),
+                nicho: document.getElementById('ad_nicho').value.trim(),
+                estilo_visual: document.getElementById('ad_estilo').value,
                 generate_images: true
             };
+            if (!formData.oferta || !formData.cliente || !formData.nicho) { showToast('Preencha todos os campos', 'error'); return; }
 
-            setLoading(true);
-            errorSection.classList.add('hidden');
+            setAdLoading(true);
+            document.getElementById('adErrorSection').classList.add('hidden');
 
-            // Controller para timeout
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
+            const timeoutId = setTimeout(() => controller.abort(), AD_TIMEOUT);
 
             try {
                 const response = await fetch(`${API_URL}/generate_ads`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData),
-                    signal: controller.signal
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData), signal: controller.signal
                 });
-
                 clearTimeout(timeoutId);
-
                 const result = await response.json();
-
-                if (result.success) {
-                    renderResults(result.data);
-                    showToast('Anúncios gerados com sucesso!');
-                } else {
-                    showError(result.error || 'Erro desconhecido ao gerar anúncios');
-                }
+                if (result.success) { renderAdResults(result.data); showToast('Anúncios gerados!'); }
+                else { document.getElementById('adErrorMessage').textContent = result.error; document.getElementById('adErrorSection').classList.remove('hidden'); }
             } catch (error) {
                 clearTimeout(timeoutId);
-                console.error('Erro:', error);
-
-                if (error.name === 'AbortError') {
-                    showError('A requisição demorou muito. Tente novamente.');
-                } else {
-                    showError('Não foi possível conectar ao servidor. Verifique se o backend está rodando.');
-                }
-            } finally {
-                setLoading(false);
-            }
+                document.getElementById('adErrorMessage').textContent = error.name === 'AbortError' ? 'Timeout - DALL-E pode demorar' : 'Erro de conexão';
+                document.getElementById('adErrorSection').classList.remove('hidden');
+            } finally { setAdLoading(false); }
         });
     </script>
 </body>

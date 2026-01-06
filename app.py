@@ -1,6 +1,8 @@
 """
-AdBlast AI v1.1 - Backend Flask
-Gerador de variações de anúncios com imagens usando OpenAI (GPT-4o + DALL-E 3)
+GrowthBlast AI v2.0 - Backend Flask
+Suite de ferramentas para Growth Team:
+- KeyBlast: Gerador de Palavras-Chave Estratégicas
+- AdBlast: Gerador de Anúncios com Imagens (DALL-E 3)
 """
 
 import os
@@ -19,15 +21,159 @@ CORS(app)
 # Inicializa o cliente OpenAI
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-# Limites de caracteres (Facebook/Instagram Ads) - ATUALIZADOS v1.1
+
+# =============================================================================
+# KEYBLAST - Gerador de Palavras-Chave
+# =============================================================================
+
+SYSTEM_PROMPT_KEYWORDS = """Você é um Especialista em Google Ads com foco em Keyword Research e ROI.
+Seu trabalho é extrair as palavras-chave com maior potencial de conversão para campanhas de tráfego pago.
+
+CONTEXTO DE EXECUÇÃO:
+O usuário fornecerá: Nicho/Ramo, Produto/Oferta e Localização.
+Você deve analisar a "Intenção do Usuário" para cada termo e classificar por etapa do funil.
+
+REGRAS DE ANÁLISE:
+1. Para cada palavra-chave, avalie:
+   - CONCORRÊNCIA: Estime como "Baixa", "Média" ou "Alta" baseado na competitividade do termo
+   - CORRESPONDÊNCIA: Sugira "Exata", "Frase" ou "Ampla" baseado na especificidade do termo
+
+2. ESTRUTURA DE FUNIL:
+   - FUNDO DE FUNIL (Intenção de Compra): Termos de quem JÁ QUER COMPRAR
+     Exemplos: "comprar [produto]", "[produto] preço", "contratar [serviço]", "[produto] promoção"
+
+   - MEIO DE FUNIL (Comparação/Pesquisa): Termos de quem está BUSCANDO SOLUÇÃO
+     Exemplos: "melhor [produto]", "[produto] vs [concorrente]", "[produto] vale a pena", "como escolher [produto]"
+
+   - TOPO DE FUNIL (Curiosidade/Problema): Termos para ATRAIR NOVOS PÚBLICOS
+     Exemplos: "o que é [tema]", "como [resolver problema]", "dicas de [tema]", "[problema] sintomas"
+
+3. QUANTIDADE:
+   - Gere 8-10 palavras para CADA etapa do funil (total: 24-30 palavras)
+
+4. LOCALIZAÇÃO:
+   - Adapte os termos para o mercado indicado (Brasil, Portugal, etc.)
+   - Use variações regionais quando aplicável
+
+REQUISITO TÉCNICO DE SAÍDA:
+Retorne EXCLUSIVAMENTE um objeto JSON puro, sem blocos de código markdown (sem ```json), sem explicações.
+
+Formato obrigatório:
+{
+  "fundo_funil": [
+    {"keyword": "termo aqui", "concorrencia": "Baixa|Média|Alta", "correspondencia": "Exata|Frase|Ampla"}
+  ],
+  "meio_funil": [
+    {"keyword": "termo aqui", "concorrencia": "Baixa|Média|Alta", "correspondencia": "Exata|Frase|Ampla"}
+  ],
+  "topo_funil": [
+    {"keyword": "termo aqui", "concorrencia": "Baixa|Média|Alta", "correspondencia": "Exata|Frase|Ampla"}
+  ]
+}
+"""
+
+
+def generate_keywords_with_openai(nicho: str, produto: str, localizacao: str) -> dict:
+    """Gera palavras-chave estratégicas usando GPT-4o."""
+
+    user_prompt = f"""Gere palavras-chave estratégicas para:
+
+NICHO/RAMO: {nicho}
+PRODUTO/OFERTA: {produto}
+LOCALIZAÇÃO: {localizacao}
+
+Lembre-se:
+- Retorne APENAS o objeto JSON
+- Gere 8-10 palavras para CADA etapa do funil
+- Adapte os termos para o mercado {localizacao}
+- Foque em termos com potencial real de conversão"""
+
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT_KEYWORDS},
+                {"role": "user", "content": user_prompt}
+            ],
+            max_tokens=2000,
+            temperature=0.7
+        )
+
+        response_text = response.choices[0].message.content.strip()
+
+        # Remove marcadores markdown se presentes
+        if response_text.startswith("```json"):
+            response_text = response_text[7:]
+        if response_text.startswith("```"):
+            response_text = response_text[3:]
+        if response_text.endswith("```"):
+            response_text = response_text[:-3]
+
+        response_text = response_text.strip()
+        keywords_data = json.loads(response_text)
+
+        # Valida estrutura
+        required_keys = ["fundo_funil", "meio_funil", "topo_funil"]
+        for key in required_keys:
+            if key not in keywords_data:
+                keywords_data[key] = []
+
+        return keywords_data
+
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Erro ao processar resposta da IA: {str(e)}")
+    except Exception as e:
+        raise Exception(f"Erro na comunicação com a API: {str(e)}")
+
+
+@app.route("/generate_keywords", methods=["POST"])
+def generate_keywords():
+    """Endpoint para gerar palavras-chave estratégicas."""
+
+    if not os.getenv("OPENAI_API_KEY"):
+        return jsonify({
+            "success": False,
+            "error": "API Key da OpenAI não configurada. Verifique o arquivo .env"
+        }), 500
+
+    data = request.get_json()
+
+    if not data:
+        return jsonify({
+            "success": False,
+            "error": "Nenhum dado enviado na requisição"
+        }), 400
+
+    nicho = data.get("nicho", "").strip()
+    produto = data.get("produto", "").strip()
+    localizacao = data.get("localizacao", "Brasil").strip()
+
+    if not nicho:
+        return jsonify({"success": False, "error": "O campo 'nicho' é obrigatório"}), 400
+    if not produto:
+        return jsonify({"success": False, "error": "O campo 'produto' é obrigatório"}), 400
+
+    try:
+        keywords_data = generate_keywords_with_openai(nicho, produto, localizacao)
+        return jsonify({"success": True, "data": keywords_data})
+
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 422
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# =============================================================================
+# ADBLAST - Gerador de Anúncios com Imagens
+# =============================================================================
+
 CHAR_LIMITS = {
-    "titulo": 40,       # Headline do Facebook Ads
-    "descricao": 250,   # Primary text estendido (5-6 linhas)
-    "cta": 20           # CTA button text
+    "titulo": 40,
+    "descricao": 250,
+    "cta": 20
 }
 
-# System prompt para o copywriter AI - ATUALIZADO v1.1
-SYSTEM_PROMPT_TEXT = """Você é um Copywriter Sênior e Estrategista de Tráfego Pago especialista em Direct Response para o mercado brasileiro. Sua especialidade é criar anúncios para Meta Ads (Facebook/Instagram) que param o scroll e geram cliques qualificados.
+SYSTEM_PROMPT_ADS = """Você é um Copywriter Sênior e Estrategista de Tráfego Pago especialista em Direct Response para o mercado brasileiro. Sua especialidade é criar anúncios para Meta Ads (Facebook/Instagram) que param o scroll e geram cliques qualificados.
 
 CONTEXTO DE EXECUÇÃO:
 O usuário fornecerá: Cliente, Oferta, Função/Nicho e opcionalmente um Estilo Visual.
@@ -76,23 +222,12 @@ def validate_and_truncate_ads(ads: list) -> list:
 
 
 def generate_image_with_dalle(prompt: str, style: str = "") -> str:
-    """
-    Gera uma imagem usando DALL-E 3.
-
-    Args:
-        prompt: Descrição da imagem em inglês
-        style: Estilo visual opcional
-
-    Returns:
-        URL da imagem gerada
-    """
+    """Gera uma imagem usando DALL-E 3."""
     try:
-        # Adiciona estilo ao prompt se fornecido
         full_prompt = prompt
         if style:
             full_prompt = f"{prompt}, {style} style"
 
-        # Adiciona instruções para anúncio
         full_prompt = f"Create a professional advertising image: {full_prompt}. High quality, suitable for social media ads, no text overlay."
 
         response = client.images.generate(
@@ -111,18 +246,7 @@ def generate_image_with_dalle(prompt: str, style: str = "") -> str:
 
 
 def generate_ads_with_openai(oferta: str, cliente: str, nicho: str, estilo_visual: str = "") -> list:
-    """
-    Gera variações de anúncios com texto usando GPT-4o.
-
-    Args:
-        oferta: A oferta principal do anúncio
-        cliente: Nome do cliente/empresa
-        nicho: Função ou nicho de mercado
-        estilo_visual: Estilo visual para as imagens (opcional)
-
-    Returns:
-        Lista de dicionários com as variações de anúncios
-    """
+    """Gera variações de anúncios com texto usando GPT-4o."""
 
     estilo_info = f"\nESTILO VISUAL DESEJADO: {estilo_visual}" if estilo_visual else ""
 
@@ -141,7 +265,7 @@ Lembre-se:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT_TEXT},
+                {"role": "system", "content": SYSTEM_PROMPT_ADS},
                 {"role": "user", "content": user_prompt}
             ],
             max_tokens=2000,
@@ -150,7 +274,6 @@ Lembre-se:
 
         response_text = response.choices[0].message.content.strip()
 
-        # Remove marcadores markdown
         if response_text.startswith("```json"):
             response_text = response_text[7:]
         if response_text.startswith("```"):
@@ -172,20 +295,7 @@ Lembre-se:
 
 @app.route("/generate_ads", methods=["POST"])
 def generate_ads():
-    """
-    Endpoint para gerar variações de anúncios com imagens.
-
-    Espera um JSON com:
-    - oferta: string (obrigatório)
-    - cliente: string (obrigatório)
-    - nicho: string (obrigatório)
-    - estilo_visual: string (opcional) - Ex: "Realista", "Minimalista", "Ilustração"
-    - generate_images: boolean (opcional, default: true)
-
-    Retorna:
-    - success: boolean
-    - data: array de objetos {titulo, descricao, cta, image_url}
-    """
+    """Endpoint para gerar variações de anúncios com imagens."""
 
     if not os.getenv("OPENAI_API_KEY"):
         return jsonify({
@@ -201,12 +311,9 @@ def generate_ads():
             "error": "Nenhum dado enviado na requisição"
         }), 400
 
-    # Campos obrigatórios
     oferta = data.get("oferta", "").strip()
     cliente = data.get("cliente", "").strip()
     nicho = data.get("nicho", "").strip()
-
-    # Campos opcionais
     estilo_visual = data.get("estilo_visual", "").strip()
     generate_images = data.get("generate_images", True)
 
@@ -218,10 +325,8 @@ def generate_ads():
         return jsonify({"success": False, "error": "O campo 'nicho' é obrigatório"}), 400
 
     try:
-        # 1. Gera os textos dos anúncios
         ads = generate_ads_with_openai(oferta, cliente, nicho, estilo_visual)
 
-        # 2. Gera as imagens para cada anúncio (se habilitado)
         if generate_images:
             for ad in ads:
                 image_prompt = ad.get("image_prompt", "")
@@ -230,20 +335,14 @@ def generate_ads():
                     ad["image_url"] = image_url
                 else:
                     ad["image_url"] = None
-
-                # Remove o prompt da imagem do retorno (não precisa ir pro frontend)
                 del ad["image_prompt"]
         else:
-            # Se não gerar imagens, remove o prompt e define url como null
             for ad in ads:
                 if "image_prompt" in ad:
                     del ad["image_prompt"]
                 ad["image_url"] = None
 
-        return jsonify({
-            "success": True,
-            "data": ads
-        })
+        return jsonify({"success": True, "data": ads})
 
     except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 422
@@ -251,13 +350,18 @@ def generate_ads():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+# =============================================================================
+# ROTAS GERAIS
+# =============================================================================
+
 @app.route("/health", methods=["GET"])
 def health_check():
     """Endpoint de health check."""
     return jsonify({
         "status": "healthy",
-        "service": "AdBlast AI",
-        "version": "1.1.0"
+        "service": "GrowthBlast AI",
+        "version": "2.0.0",
+        "tools": ["KeyBlast", "AdBlast"]
     })
 
 
@@ -269,17 +373,17 @@ def serve_frontend():
 
 if __name__ == "__main__":
     print("\n" + "="*50)
-    print("🚀 AdBlast AI v1.1 - Backend iniciado!")
+    print("🚀 GrowthBlast AI v2.0 - Backend iniciado!")
     print("="*50)
     print("📍 Servidor: http://localhost:5000")
     print("📡 Endpoints:")
-    print("   POST /generate_ads - Gera anúncios + imagens")
-    print("   GET  /health       - Health check")
+    print("   POST /generate_keywords - KeyBlast (Palavras-Chave)")
+    print("   POST /generate_ads      - AdBlast (Anúncios + Imagens)")
+    print("   GET  /health            - Health check")
     print("="*50)
-    print("🆕 Novidades v1.1:")
-    print("   • Descrições estendidas (250 chars)")
-    print("   • Geração de imagens com DALL-E 3")
-    print("   • Campo opcional 'estilo_visual'")
+    print("🔧 Ferramentas disponíveis:")
+    print("   🔑 KeyBlast - Palavras-chave por funil")
+    print("   🎨 AdBlast  - Anúncios com DALL-E 3")
     print("="*50 + "\n")
 
     app.run(debug=True, host="0.0.0.0", port=5000)
