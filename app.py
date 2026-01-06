@@ -1,6 +1,6 @@
 """
-GrowthBlast AI v3.0 - Backend Flask
-Suite de ferramentas para Growth Team (Foco: Performance & Dados Reais):
+Gerador de Anuncios - ODUO
+Ferramenta interna para geração de anúncios e títulos para Google Ads.
 - Data Hunter: Scraper de Google Autocomplete (A-Z)
 - Ad-Intelligence: Análise de intenção + Modelagem de anúncios vencedores
 """
@@ -13,6 +13,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from openai import OpenAI
 from dotenv import load_dotenv
+from werkzeug.middleware.proxy_fix import ProxyFix
 import string
 
 # Lista de User-Agents para simular navegadores reais
@@ -32,7 +33,20 @@ USER_AGENTS = [
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+
+# =============================================================================
+# CONFIGURAÇÃO PARA CLOUDFLARE / PROXY REVERSO
+# =============================================================================
+# ProxyFix corrige headers quando app roda atrás de proxy (Cloudflare, nginx, etc)
+# x_for=1: confia no header X-Forwarded-For (IP real do cliente)
+# x_proto=1: confia no header X-Forwarded-Proto (http/https)
+# x_host=1: confia no header X-Forwarded-Host (domínio original)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
+# CORS configurado para aceitar requisições do seu domínio
+# Em produção, defina ALLOWED_ORIGINS no .env (ex: "https://meudominio.com.br,https://www.meudominio.com.br")
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+CORS(app, origins=allowed_origins, supports_credentials=True)
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -674,8 +688,8 @@ def health_check():
     """Endpoint de health check."""
     return jsonify({
         "status": "healthy",
-        "service": "GrowthBlast AI",
-        "version": "3.0.0",
+        "service": "Gerador de Anuncios",
+        "version": "1.0.0",
         "tools": ["Data Hunter", "Ad-Intelligence"]
     })
 
